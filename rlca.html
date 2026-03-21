@@ -92,6 +92,47 @@ table.dt td:nth-child(2),table.dt td:nth-child(3),table.dt td:nth-child(6){font-
 .spin{width:16px;height:16px;border:2px solid rgba(255,255,255,0.1);border-top-color:var(--teal);border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0;}
 #loading-state{display:flex;align-items:center;justify-content:center;min-height:280px;gap:10px;color:var(--mid);font-size:13px;padding:24px;flex-wrap:wrap;text-align:center;}
 
+/* FILTER BAR (below page header) */
+.filter-bar{background:var(--navy2);border:1px solid var(--bdr);border-radius:10px;
+  margin:12px 24px 0;padding:14px 20px;display:flex;gap:20px;flex-wrap:wrap;align-items:flex-end;}
+.fg{display:flex;flex-direction:column;gap:5px;}
+.fg label{font-size:10px;font-weight:700;letter-spacing:0.12em;color:#6B88B4;text-transform:uppercase;}
+.fg select{background:var(--navy);color:var(--white);border:1.5px solid var(--bdr);
+  border-radius:8px;padding:7px 12px;font-family:inherit;font-size:13px;
+  appearance:none;cursor:pointer;min-width:160px;transition:border-color .2s;}
+.fg select:focus{outline:none;border-color:var(--teal);}
+.fg select option{background:var(--navy2);}
+.filter-free-tag{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:4px;
+  font-size:10px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;
+  background:rgba(26,188,156,0.12);border:1px solid rgba(26,188,156,0.3);color:var(--teal);
+  align-self:flex-end;margin-bottom:1px;}
+
+/* UPSELL OVERLAY */
+.upsell-overlay{position:fixed;inset:0;background:rgba(5,10,25,0.93);backdrop-filter:blur(10px);
+  z-index:500;display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .3s;}
+.upsell-overlay.show{opacity:1;pointer-events:all;}
+.upsell-card{background:linear-gradient(145deg,#121d38,#0d0f1a);
+  border:2px solid var(--gold);border-radius:20px;
+  padding:48px 44px;max-width:460px;width:92%;text-align:center;
+  transform:translateY(20px) scale(0.97);transition:transform .35s cubic-bezier(0.34,1.56,0.64,1);}
+.upsell-overlay.show .upsell-card{transform:translateY(0) scale(1);}
+.upsell-icon{font-size:44px;margin-bottom:16px;display:block;}
+.upsell-card h2{font-size:24px;font-weight:800;margin-bottom:10px;letter-spacing:-.02em;color:var(--white);}
+.upsell-card h2 span{color:var(--gold);}
+.upsell-what{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;
+  color:var(--teal);margin-bottom:8px;}
+.upsell-card p{font-size:13px;color:var(--dim);line-height:1.75;margin-bottom:28px;}
+.upsell-card p strong{color:rgba(255,255,255,0.85);}
+.upsell-actions{display:flex;flex-direction:column;align-items:center;gap:10px;}
+.upsell-btn{display:inline-block;background:var(--gold);color:#0d0f1a;
+  padding:13px 34px;border-radius:10px;font-weight:800;text-decoration:none;font-size:14px;
+  letter-spacing:.01em;transition:transform .15s,box-shadow .15s;cursor:pointer;border:none;font-family:inherit;}
+.upsell-btn:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(245,166,35,0.4);}
+.upsell-dismiss{font-size:12px;color:rgba(255,255,255,0.32);cursor:pointer;
+  background:none;border:none;font-family:inherit;transition:color .2s;padding:4px;}
+.upsell-dismiss:hover{color:rgba(255,255,255,0.65);}
+
 footer{border-top:1px solid var(--bdr);padding:20px 24px;display:flex;justify-content:space-between;align-items:center;color:rgba(255,255,255,0.22);font-size:12px;margin-top:4px;}
 @media(max-width:700px){
   nav,footer{padding:12px 14px;}
@@ -112,6 +153,20 @@ footer{border-top:1px solid var(--bdr);padding:20px 24px;display:flex;justify-co
   </div>
 </nav>
 
+<!-- UPSELL OVERLAY -->
+<div class="upsell-overlay" id="upsell">
+  <div class="upsell-card">
+    <span class="upsell-icon">📊</span>
+    <div class="upsell-what" id="upsell-what">Additional Data Available</div>
+    <h2>Unlock <span>Full rLCA</span> Access</h2>
+    <p id="upsell-msg">rLCA reports for additional countries, sectors, and years are available through TASA EFX. <strong>Contact us</strong> to get access to the full dataset.</p>
+    <div class="upsell-actions">
+      <a href="mailto:info@tasa-efx.com" class="upsell-btn">Contact TASA EFX →</a>
+      <button class="upsell-dismiss" onclick="dismissUpsell()">Go back to default view</button>
+    </div>
+  </div>
+</div>
+
 <div class="ph">
   <div>
     <div class="ph-badge">rLCA · Rapid Lifecycle Assessment</div>
@@ -124,6 +179,42 @@ footer{border-top:1px solid var(--bdr);padding:20px 24px;display:flex;justify-co
     <div class="stat-box"><div class="stat-val">KOR</div><div class="stat-lbl">Country</div></div>
     <div class="stat-box"><div class="stat-val">2023</div><div class="stat-lbl">Year</div></div>
   </div>
+</div>
+
+<!-- FILTER BAR -->
+<div class="filter-bar">
+  <div class="fg">
+    <label>Focal Sector</label>
+    <select id="fb-sector" onchange="onFilterBarChange('sector',this)">
+      <option value="abrasive">Abrasive Materials</option>
+      <option value="other1">Basic Inorganic Chemicals</option>
+      <option value="other2">Plastics &amp; Rubber</option>
+      <option value="other3">Metal Products</option>
+      <option value="other4">Construction Materials</option>
+    </select>
+  </div>
+  <div class="fg">
+    <label>Country</label>
+    <select id="fb-country" onchange="onFilterBarChange('country',this)">
+      <option value="kor">South Korea</option>
+      <option value="usa">United States</option>
+      <option value="deu">Germany</option>
+      <option value="chn">China</option>
+      <option value="jpn">Japan</option>
+      <option value="gbr">United Kingdom</option>
+    </select>
+  </div>
+  <div class="fg">
+    <label>Year</label>
+    <select id="fb-year" onchange="onFilterBarChange('year',this)">
+      <option value="2023">2023</option>
+      <option value="2022">2022</option>
+      <option value="2020">2020</option>
+      <option value="2017">2017</option>
+      <option value="2024">2024</option>
+    </select>
+  </div>
+  <div class="filter-free-tag">✓ Demo: KOR · Abrasive · 2023</div>
 </div>
 
 <div id="loading-state">
@@ -475,6 +566,36 @@ function sortTable(col) {
   else { sortCol = col; sortDir = 'desc'; }
   render();
 }
+
+// ── Filter bar — upsell on any non-default selection ─────────
+const FREE = { sector: 'abrasive', country: 'kor', year: '2023' };
+const LABELS = {
+  sector:  { abrasive:'Abrasive Materials', other1:'Basic Inorganic Chemicals', other2:'Plastics & Rubber', other3:'Metal Products', other4:'Construction Materials' },
+  country: { kor:'South Korea', usa:'United States', deu:'Germany', chn:'China', jpn:'Japan', gbr:'United Kingdom' },
+  year:    { '2023':'2023', '2022':'2022', '2020':'2020', '2017':'2017', '2024':'2024' }
+};
+
+function onFilterBarChange(dim, sel) {
+  if (sel.value === FREE[dim]) return; // still on free option, no upsell
+  const chosen = LABELS[dim][sel.value] || sel.value;
+  const dimLabel = dim === 'sector' ? 'Focal Sector' : dim === 'country' ? 'Country' : 'Year';
+  document.getElementById('upsell-what').textContent = `${dimLabel} · ${chosen}`;
+  document.getElementById('upsell-msg').innerHTML =
+    `rLCA reports for <strong>${chosen}</strong> are available through TASA EFX. ` +
+    `Contact us to get access to the full dataset for your country, sector, and year of interest.`;
+  document.getElementById('upsell').classList.add('show');
+  // Reset the dropdown back to free default
+  sel.value = FREE[dim];
+}
+
+function dismissUpsell() {
+  document.getElementById('upsell').classList.remove('show');
+}
+
+// Close on backdrop click
+document.getElementById('upsell').addEventListener('click', function(e) {
+  if (e.target === this) dismissUpsell();
+});
 
 // ── Boot ──────────────────────────────────────────────────────
 (async () => {
