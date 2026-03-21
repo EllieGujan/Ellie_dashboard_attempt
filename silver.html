@@ -258,20 +258,29 @@ function switchTab(id,btn){
 
 function getSelected(id){ return [...document.getElementById(id).selectedOptions].map(o=>o.value); }
 
+// ── Default selections shown on first load ──
+const DEFAULT_ISIC    = 'Abrasive Material';   // EDIT: change default sector if needed
+const DEFAULT_COUNTRY = 'Korea';               // EDIT: change default country if needed
+
 function populateControls(){
   const isics     = [...new Set(dfLong.map(r=>r.isic).filter(Boolean))].sort();
   const countries = [...new Set(dfLong.map(r=>r.country).filter(Boolean))].sort();
 
   const iSel = document.getElementById('f-isic');
   iSel.innerHTML = '';
-  isics.forEach(s=>iSel.add(new Option(s,s)));
+  isics.forEach(s=>{
+    const o = new Option(s,s);
+    // Pre-select the default sector
+    if(s === DEFAULT_ISIC || (!isics.includes(DEFAULT_ISIC) && s === isics[0])) o.selected = true;
+    iSel.add(o);
+  });
 
   const cSel = document.getElementById('f-country');
   cSel.innerHTML = '';
   countries.forEach(c=>{
     const o = new Option(c,c);
-    // Default select first 3 countries, like Python's value=["Australia","Brazil","Germany"]
-    if(['Australia','Brazil','Germany'].includes(c)) o.selected = true;
+    // Pre-select the default country; fall back to first country if not found
+    if(c === DEFAULT_COUNTRY || (!countries.includes(DEFAULT_COUNTRY) && c === countries[0])) o.selected = true;
     cSel.add(o);
   });
 }
