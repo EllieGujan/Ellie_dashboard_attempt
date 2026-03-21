@@ -382,7 +382,16 @@ function buildSilverMap(csvText){
 
 // ── Load Platinum Excel ───────────────────────────────────────
 function loadExcel(buf){
-  const wb  = XLSX.read(buf,{type:'array'});
+  // Parse only the one sheet needed, skip styles/formulas — much faster on large files
+  const wb  = XLSX.read(buf,{
+    type:'array',
+    sheets: SHEET_NAME,
+    cellStyles: false,
+    cellFormula: false,
+    cellHTML: false,
+    cellNF: false,
+    sheetStubs: false
+  });
   const ws  = wb.Sheets[SHEET_NAME];
   if(!ws){ showError(`Sheet "${SHEET_NAME}" not found.`); return; }
 

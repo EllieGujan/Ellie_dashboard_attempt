@@ -167,7 +167,15 @@ function showError(msg){
 }
 
 function loadExcel(buf){
-  const wb=XLSX.read(buf,{type:'array'});
+  // Parse only what's needed — skip styles/formulas for speed
+  const wb=XLSX.read(buf,{
+    type:'array',
+    cellStyles:false,
+    cellFormula:false,
+    cellHTML:false,
+    cellNF:false,
+    sheetStubs:false
+  });
   // Try to find a sheet with emissions data
   let ws=null, sheetName='';
   for(const sn of wb.SheetNames){
