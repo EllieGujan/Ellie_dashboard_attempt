@@ -184,34 +184,21 @@ footer{border-top:1px solid var(--bdr);padding:20px 24px;display:flex;justify-co
 <!-- FILTER BAR -->
 <div class="filter-bar">
   <div class="fg">
-    <label>Focal Sector</label>
-    <select id="fb-sector" onchange="onFilterBarChange('sector',this)">
-      <option value="abrasive">Abrasive Materials</option>
-      <option value="other1">Basic Inorganic Chemicals</option>
-      <option value="other2">Plastics &amp; Rubber</option>
-      <option value="other3">Metal Products</option>
-      <option value="other4">Construction Materials</option>
-    </select>
+    <label>Country</label>
+    <select id="fb-country" onchange="onCountryChange()"><option value="">Loading…</option></select>
   </div>
   <div class="fg">
-    <label>Country</label>
-    <select id="fb-country" onchange="onFilterBarChange('country',this)">
-      <option value="kor">South Korea</option>
-      <option value="usa">United States</option>
-      <option value="deu">Germany</option>
-      <option value="chn">China</option>
-      <option value="jpn">Japan</option>
-      <option value="gbr">United Kingdom</option>
-    </select>
+    <label>Country Sector</label>
+    <select id="fb-sector" onchange="onSectorChange()"><option value="">Loading…</option></select>
   </div>
   <div class="fg">
     <label>Year</label>
-    <select id="fb-year" onchange="onFilterBarChange('year',this)">
-      <option value="2023">2023</option>
+    <select id="fb-year" onchange="onYearChange()">
+      <option value="2023" selected>2023</option>
+      <option value="2024">2024</option>
       <option value="2022">2022</option>
       <option value="2020">2020</option>
-      <option value="2017">2017</option>
-      <option value="2024">2024</option>
+      <option value="2017">2017 (Base Year)</option>
     </select>
   </div>
   <div class="filter-free-tag">✓ Demo: KOR · Abrasive · 2023</div>
@@ -567,32 +554,112 @@ function sortTable(col) {
   render();
 }
 
-// ── Filter bar — upsell on any non-default selection ─────────
-const FREE = { sector: 'abrasive', country: 'kor', year: '2023' };
-const LABELS = {
-  sector:  { abrasive:'Abrasive Materials', other1:'Basic Inorganic Chemicals', other2:'Plastics & Rubber', other3:'Metal Products', other4:'Construction Materials' },
-  country: { kor:'South Korea', usa:'United States', deu:'Germany', chn:'China', jpn:'Japan', gbr:'United Kingdom' },
-  year:    { '2023':'2023', '2022':'2022', '2020':'2020', '2017':'2017', '2024':'2024' }
-};
+// ── Filter bar — populated from Silver CSV, upsell on non-free ──
+const SILVER_CSV     = 'TASA_Silver_NAICS_ISIC.csv';
+const DEFAULT_COUNTRY = 'South Korea';
+const DEFAULT_SECTOR  = 'South Korea — Abrasive Material'; // free demo sector
+const FREE_YEAR       = '2023';
 
-function onFilterBarChange(dim, sel) {
-  if (sel.value === FREE[dim]) return; // still on free option, no upsell
-  const chosen = LABELS[dim][sel.value] || sel.value;
-  const dimLabel = dim === 'sector' ? 'Focal Sector' : dim === 'country' ? 'Country' : 'Year';
-  document.getElementById('upsell-what').textContent = `${dimLabel} · ${chosen}`;
-  document.getElementById('upsell-msg').innerHTML =
-    `rLCA reports for <strong>${chosen}</strong> are available through TASA EFX. ` +
-    `Contact us to get access to the full dataset for your country, sector, and year of interest.`;
+let silverMap = {}; // { country: [sector, ...] }
+
+function parseCSV(text) {
+  function parseLine(line) {
+    const vals = []; let cur = '', inQ = false;
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i];
+      if (ch === '"') { if (inQ && line[i+1]==='"') { cur+='"'; i++; } else inQ=!inQ; }
+      else if (ch === ',' && !inQ) { vals.push(cur.trim()); cur = ''; }
+      else cur += ch;
+    }
+    vals.push(cur.trim()); return vals;
+  }
+  const lines = text.trim().split(/\r?\n/);
+  const hdr   = parseLine(lines[0]).map(h => h.replace(/^"|"$/g,'').trim());
+  return lines.slice(1).filter(l => l.trim()).map(ln => {
+    const vals = parseLine(ln).map(v => v.replace(/^"|"$/g,'').trim());
+    const o = {}; hdr.forEach((h,i) => o[h] = vals[i] ?? ''); return o;
+  });
+}
+
+function buildSilverMap(csvText) {
+  const rows = parseCSV(csvText);
+  silverMap = {};
+  rows.forEach(row => {
+    const country = row['Country Name'], sector = row['Country Sector'];
+    if (!country || !sector) return;
+    if (!silverMap[country]) silverMap[country] = new Set();
+    silverMap[country].add(sector);
+  });
+  Object.keys(silverMap).forEach(c => { silverMap[c] = [...silverMap[c]].sort(); });
+
+  // Populate country dropdown
+  const cSel = document.getElementById('fb-country');
+  cSel.innerHTML = '';
+  Object.keys(silverMap).sort().forEach(c => {
+    const o = new Option(c, c);
+    if (c === DEFAULT_COUNTRY) o.selected = true;
+    cSel.add(o);
+  });
+
+  // Populate sector dropdown for default country
+  rebuildSectorDropdown(DEFAULT_COUNTRY, DEFAULT_SECTOR);
+}
+
+function rebuildSectorDropdown(country, selectValue) {
+  const sSel = document.getElementById('fb-sector');
+  sSel.innerHTML = '';
+  (silverMap[country] || []).forEach(s => sSel.add(new Option(s, s)));
+  // Try to select the target value; fall back to first option
+  const match = [...sSel.options].find(o => o.value === selectValue);
+  sSel.value = match ? selectValue : (sSel.options[0] || {}).value || '';
+}
+
+function onCountryChange() {
+  const country = document.getElementById('fb-country').value;
+  if (country !== DEFAULT_COUNTRY) {
+    showUpsell(
+      `Country · ${country}`,
+      `rLCA reports for <strong>${country}</strong> are available through TASA EFX. Contact us to get access to the full dataset for your country of interest.`
+    );
+    document.getElementById('fb-country').value = DEFAULT_COUNTRY;
+    rebuildSectorDropdown(DEFAULT_COUNTRY, DEFAULT_SECTOR);
+    return;
+  }
+  rebuildSectorDropdown(country, DEFAULT_SECTOR);
+}
+
+function onSectorChange() {
+  const sector = document.getElementById('fb-sector').value;
+  // Free if it contains "Abrasive Material" (matches "South Korea — Abrasive Material")
+  if (sector.toLowerCase().includes('abrasive material')) return;
+  showUpsell(
+    `Sector · ${sector}`,
+    `rLCA reports for <strong>${sector}</strong> are available through TASA EFX. Contact us to get access to the full dataset for this sector.`
+  );
+  document.getElementById('fb-sector').value = DEFAULT_SECTOR;
+}
+
+function onYearChange() {
+  const year = document.getElementById('fb-year').value;
+  if (year === FREE_YEAR) return;
+  const label = year === '2017' ? '2017 (Base Year)' : year;
+  showUpsell(
+    `Year · ${label}`,
+    `rLCA reports for <strong>${label}</strong> are available through TASA EFX. Contact us to access data across all available years.`
+  );
+  document.getElementById('fb-year').value = FREE_YEAR;
+}
+
+function showUpsell(what, msg) {
+  document.getElementById('upsell-what').textContent = what;
+  document.getElementById('upsell-msg').innerHTML    = msg;
   document.getElementById('upsell').classList.add('show');
-  // Reset the dropdown back to free default
-  sel.value = FREE[dim];
 }
 
 function dismissUpsell() {
   document.getElementById('upsell').classList.remove('show');
 }
 
-// Close on backdrop click
 document.getElementById('upsell').addEventListener('click', function(e) {
   if (e.target === this) dismissUpsell();
 });
@@ -600,9 +667,20 @@ document.getElementById('upsell').addEventListener('click', function(e) {
 // ── Boot ──────────────────────────────────────────────────────
 (async () => {
   try {
-    const resp = await fetch(XLSX_FILE);
-    if (!resp.ok) throw new Error(`HTTP ${resp.status} — file not found`);
-    loadExcel(new Uint8Array(await resp.arrayBuffer()));
+    const [silverResp, xlsxResp] = await Promise.all([
+      fetch(SILVER_CSV),
+      fetch(XLSX_FILE)
+    ]);
+    if (!silverResp.ok) throw new Error(`Silver CSV not found: ${SILVER_CSV}`);
+    if (!xlsxResp.ok)   throw new Error(`Excel file not found: ${XLSX_FILE}`);
+
+    const [silverText, xlsxBuf] = await Promise.all([
+      silverResp.text(),
+      xlsxResp.arrayBuffer()
+    ]);
+
+    buildSilverMap(silverText);
+    loadExcel(new Uint8Array(xlsxBuf));
   } catch(e) {
     showError(`<strong>${e.message}</strong>`);
   }
