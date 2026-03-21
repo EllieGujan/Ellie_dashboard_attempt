@@ -300,14 +300,39 @@ function switchTab(id,btn){
 
 // ── Upsell ────────────────────────────────────────────────────
 function showUpsell(){ document.getElementById('upsell').classList.add('show'); }
+
+// Find the actual option value in the sector dropdown that matches DEFAULT_SECTOR
+// (handles cases where exact string may differ slightly)
+function findDefaultSectorOption(){
+  const sSel = document.getElementById('f-sector');
+  const opts = [...sSel.options].map(o=>o.value);
+  // Exact match first
+  if(opts.includes(DEFAULT_SECTOR)) return DEFAULT_SECTOR;
+  // Fallback: find option containing "Abrasive Material" (case-insensitive)
+  const fuzzy = opts.find(o=>o.toLowerCase().includes('abrasive material'));
+  if(fuzzy) return fuzzy;
+  // Last resort: first option
+  return opts[0] || '';
+}
+
+function resetToDefault(){
+  document.getElementById('f-country').value = DEFAULT_COUNTRY;
+  // Rebuild sector list for South Korea without triggering upsell
+  const sectors = silverMap[DEFAULT_COUNTRY] || [];
+  const sSel = document.getElementById('f-sector');
+  sSel.innerHTML = '';
+  sectors.forEach(s=>sSel.add(new Option(s,s)));
+  // Now find and select the default
+  const defVal = findDefaultSectorOption();
+  sSel.value = defVal;
+  document.getElementById('f-year').value = '2023';
+  return defVal;
+}
+
 function dismissUpsell(){
   document.getElementById('upsell').classList.remove('show');
-  // Reset all controls to defaults
-  document.getElementById('f-country').value = DEFAULT_COUNTRY;
-  onCountryChange(true);
-  document.getElementById('f-sector').value = DEFAULT_SECTOR;
-  document.getElementById('f-year').value = '2023';
-  renderDashboard(DEFAULT_SECTOR, '2023');
+  const defVal = resetToDefault();
+  renderDashboard(defVal, '2023');
 }
 
 // ── Country change → rebuild sector dropdown ──────────────────
@@ -337,9 +362,11 @@ function onFilterChange(){
   const year   = document.getElementById('f-year').value;
 
   // Any sector other than the default → upsell
-  if(sector && sector !== DEFAULT_SECTOR){
+  if(sector && sector !== DEFAULT_SECTOR && !sector.toLowerCase().includes('abrasive material')){
     showUpsell();
-    document.getElementById('f-sector').value = DEFAULT_SECTOR;
+    // Reset sector dropdown back to Abrasive Material immediately
+    const defVal = findDefaultSectorOption();
+    document.getElementById('f-sector').value = defVal;
     return;
   }
 
