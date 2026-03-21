@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Silver Model — TASA EFX</title>
+<style>
+:root {
+  --navy:  #0B1D3A;
+  --navy2: #0F2448;
+  --gold:  #F5A623;
+  --s1:    #E8534A;
+  --s2:    #F0A500;
+  --s3:    #4A90D9;
+  --dim:   rgba(255,255,255,0.48);
+  --bdr:   rgba(255,255,255,0.09);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',Arial,sans-serif;background:var(--navy);color:#fff;min-height:100vh;}
+
+nav{display:flex;align-items:center;justify-content:space-between;padding:13px 36px;
+    background:rgba(11,29,58,0.97);border-bottom:1px solid var(--bdr);
+    position:sticky;top:0;z-index:100;}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:#fff;}
+.nav-logo img{height:36px;border-radius:5px;}
+.logo-text{font-size:15px;font-weight:700;}
+.logo-text span{color:var(--gold);}
+.nav-links{display:flex;gap:22px;}
+.nav-links a{color:var(--dim);text-decoration:none;font-size:14px;font-weight:500;transition:color .2s;}
+.nav-links a:hover{color:var(--gold);}
+.nav-links a.active{color:#fff;border-bottom:2px solid var(--gold);padding-bottom:2px;}
+
+.ph{padding:32px 36px 20px;border-bottom:1px solid var(--bdr);}
+.ph .ey{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:7px;}
+.ph h1{font-size:24px;font-weight:700;letter-spacing:-.01em;margin-bottom:5px;}
+.ph p{font-size:13px;color:var(--dim);line-height:1.6;max-width:520px;}
+
+.tabs{display:flex;padding:0 36px;border-bottom:1px solid var(--bdr);background:rgba(255,255,255,0.015);}
+.tb{padding:13px 20px;background:none;border:none;border-bottom:2.5px solid transparent;
+    color:var(--dim);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;
+    transition:color .2s,border-color .2s;margin-bottom:-1px;}
+.tb:hover{color:#fff;}
+.tb.on{color:#fff;border-bottom-color:var(--gold);}
+.pane{display:none;} .pane.on{display:block;}
+
+.filters{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end;
+         padding:18px 36px;border-bottom:1px solid var(--bdr);background:rgba(255,255,255,0.02);}
+.fg{display:flex;flex-direction:column;gap:4px;}
+.fg label{font-size:10px;text-transform:uppercase;letter-spacing:.13em;color:#6B88B4;font-weight:600;}
+.fg select{background:rgba(255,255,255,0.07);border:1.5px solid rgba(255,255,255,0.13);
+  color:#fff;border-radius:7px;padding:7px 12px;font-size:13px;font-family:inherit;
+  min-width:180px;appearance:none;cursor:pointer;transition:border-color .2s;}
+.fg select:focus{outline:none;border-color:var(--gold);}
+.fg select option{background:#0F2448;}
+
+.main{padding:24px 36px;}
+
+.stats{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:22px;}
+.sc{background:rgba(255,255,255,0.04);border:1px solid var(--bdr);border-radius:9px;padding:12px 16px;min-width:120px;}
+.sc .sl{font-size:10px;text-transform:uppercase;letter-spacing:.11em;color:#6B88B4;margin-bottom:3px;}
+.sc .sv{font-size:20px;font-weight:700;}
+.sc.s1 .sv{color:var(--s1);} .sc.s2 .sv{color:var(--s2);} .sc.s3 .sv{color:var(--s3);}
+
+.cg2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px;}
+.cg1{margin-bottom:18px;}
+.cb{background:rgba(255,255,255,0.03);border:1px solid var(--bdr);border-radius:11px;padding:18px;}
+.cb h3{font-size:12px;font-weight:600;color:rgba(255,255,255,0.72);margin-bottom:2px;}
+.cb .cs{font-size:11px;color:var(--dim);margin-bottom:14px;}
+
+.bar-chart{display:flex;flex-direction:column;gap:6px;}
+.bar-row{display:flex;align-items:center;gap:8px;font-size:11px;}
+.bar-label{width:130px;flex-shrink:0;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:right;}
+.bar-track{flex:1;height:20px;background:rgba(255,255,255,0.05);border-radius:3px;overflow:hidden;display:flex;}
+.bar-seg{height:100%;transition:width .5s ease;}
+.bar-val{width:48px;flex-shrink:0;color:rgba(255,255,255,0.55);font-size:10px;text-align:right;}
+
+.trend-wrap{width:100%;overflow:hidden;}
+.trend-wrap svg{width:100%;height:180px;}
+
+.hbar-chart{display:flex;flex-direction:column;gap:7px;}
+.hbar-row{display:flex;align-items:center;gap:8px;font-size:11px;}
+.hbar-label{width:190px;flex-shrink:0;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.hbar-track{flex:1;height:14px;background:rgba(255,255,255,0.05);border-radius:3px;overflow:hidden;}
+.hbar-fill{height:100%;border-radius:3px;transition:width .6s ease;}
+.hbar-val{width:44px;flex-shrink:0;color:rgba(255,255,255,0.55);font-size:10px;text-align:right;}
+
+.leg{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:10px;}
+.li{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--dim);}
+.ld{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+
+.tc{display:flex;gap:10px;align-items:center;margin-bottom:12px;flex-wrap:wrap;}
+.tc input{background:rgba(255,255,255,0.07);border:1.5px solid rgba(255,255,255,0.13);
+  color:#fff;border-radius:7px;padding:7px 11px;font-size:13px;font-family:inherit;width:240px;}
+.tc input::placeholder{color:#6B88B4;}
+.tc input:focus{outline:none;border-color:var(--gold);}
+.rc{font-size:12px;color:var(--dim);margin-left:auto;}
+.tw{overflow-x:auto;border-radius:9px;border:1px solid var(--bdr);}
+table{width:100%;border-collapse:collapse;font-size:12px;}
+thead{background:rgba(255,255,255,0.04);}
+th{padding:10px 13px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.10em;
+   color:#6B88B4;border-bottom:1px solid var(--bdr);white-space:nowrap;font-weight:600;}
+td{padding:9px 13px;border-bottom:1px solid rgba(255,255,255,0.04);color:rgba(255,255,255,0.78);font-variant-numeric:tabular-nums;}
+tr:last-child td{border-bottom:none;}
+tbody tr:hover td{background:rgba(255,255,255,0.025);}
+.cs1{color:var(--s1);font-weight:600;} .cs2{color:var(--s2);font-weight:600;} .cs3{color:var(--s3);font-weight:600;}
+
+footer{border-top:1px solid var(--bdr);padding:20px 36px;display:flex;justify-content:space-between;
+       align-items:center;color:rgba(255,255,255,0.25);font-size:12px;margin-top:40px;}
+
+@media(max-width:780px){
+  nav,footer{padding:12px 16px;}
+  .ph,.filters,.main{padding-left:16px;padding-right:16px;}
+  .tabs{padding:0 16px;}
+  .cg2{grid-template-columns:1fr;}
+  .bar-label{width:80px;}
+  .hbar-label{width:130px;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html">
+    <!-- LOGO: replace this div with <img src="assets/logo.jpeg" alt="TASA EFX"> -->
+    <div class="logo-text">TASA <span>EFX</span></div>
+  </a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="silver.html" class="active">Silver</a>
+    <a href="platinum.html">Platinum</a>
+    <a href="rlca.html">rLCA</a>
+  </div>
+</nav>
+
+<div class="ph">
+  <p class="ey">Silver Model · NAICS / ISIC</p>
+  <h1>Scope Emissions Intensity Dashboard</h1>
+  <!-- EDIT: update this description -->
+  <p>Benchmark Scope 1, 2 &amp; 3 emissions intensity (kgCO₂e / USD revenue) across sectors and countries, 2020–2024.</p>
+</div>
+
+<div class="tabs">
+  <button class="tb on" onclick="switchTab('dash',this)">📊 Dashboard</button>
+  <button class="tb"    onclick="switchTab('raw',this)">📋 Raw Data</button>
+</div>
+
+<div class="filters">
+  <div class="fg"><label>ISIC Sector</label>
+    <select id="f-isic" onchange="applyFilters()"><option value="">All Sectors</option></select>
+  </div>
+  <div class="fg"><label>Country</label>
+    <select id="f-country" onchange="applyFilters()"><option value="">All Countries</option></select>
+  </div>
+  <div class="fg"><label>Year</label>
+    <select id="f-year" onchange="applyFilters()">
+      <option value="2024">2024</option>
+      <option value="2023">2023</option>
+      <option value="2020">2020</option>
+      <option value="Base Year">Base Year</option>
+    </select>
+  </div>
+</div>
+
+<div id="pane-dash" class="pane on">
+  <div class="main">
+    <div class="stats">
+      <div class="sc">   <div class="sl">Total EI</div><div class="sv" id="st-tot">—</div></div>
+      <div class="sc s1"><div class="sl">Scope 1</div> <div class="sv" id="st-s1">—</div></div>
+      <div class="sc s2"><div class="sl">Scope 2</div> <div class="sv" id="st-s2">—</div></div>
+      <div class="sc s3"><div class="sl">Scope 3</div> <div class="sv" id="st-s3">—</div></div>
+    </div>
+
+    <div class="cg2">
+      <div class="cb">
+        <h3>Scope Breakdown by Sector</h3>
+        <p class="cs">Stacked — selected year &amp; filters</p>
+        <div class="leg">
+          <div class="li"><div class="ld" style="background:var(--s1)"></div>Scope 1</div>
+          <div class="li"><div class="ld" style="background:var(--s2)"></div>Scope 2</div>
+          <div class="li"><div class="ld" style="background:var(--s3)"></div>Scope 3</div>
+        </div>
+        <div class="bar-chart" id="ch-bar"></div>
+      </div>
+      <div class="cb">
+        <h3>Emissions Trend 2020–2024</h3>
+        <p class="cs">Average Total EI over time</p>
+        <div class="trend-wrap"><svg id="ch-trend" viewBox="0 0 500 170" preserveAspectRatio="xMidYMid meet"></svg></div>
+      </div>
+    </div>
+
+    <div class="cg1 cb">
+      <h3>Top 10 Sectors by Total Emissions Intensity</h3>
+      <p class="cs" id="top10-sub">2024 · average across countries</p>
+      <div class="hbar-chart" id="ch-top10"></div>
+    </div>
+  </div>
+</div>
+
+<div id="pane-raw" class="pane">
+  <div class="main">
+    <div class="tc">
+      <input type="text" id="ts" placeholder="Search sector or country…" oninput="renderTable()">
+      <span class="rc" id="rc"></span>
+    </div>
+    <div class="tw">
+      <table><thead id="th"></thead>
+      <tbody id="tb"><tr><td style="padding:36px;text-align:center;color:var(--dim)">Loading…</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <!-- EDIT: update copyright / contact -->
+  <span>© 2025 TASA EFX. All rights reserved.</span>
+  <span>Silver Model · Emissions Intelligence Platform</span>
+</footer>
+
+<script>
+// ═══════════════════════════════════════════════
+// CONFIG — set your CSV path if you have one
+const CSV_URL = 'TASA_Silver_NAICS_ISIC.csv';
+// ═══════════════════════════════════════════════
+
+function makeSample() {
+  const sectors = [
+    'Manufacture of motor vehicles','Electricity generation',
+    'Agriculture, forestry & fishing','Manufacture of cement',
+    'Air transport','Steel manufacturing',
+    'Chemical industry','Food & beverage manufacturing',
+    'Coal mining','Textile manufacturing'
+  ];
+  const countries = ['United States','Germany','China','Japan','Australia','Brazil'];
+  const rows = [];
+  let seed = 42;
+  const rng = () => { seed = (seed * 16807) % 2147483647; return (seed-1)/2147483646; };
+  sectors.forEach(sec => {
+    countries.forEach(cty => {
+      const b = rng()*320 + 90;
+      const mk = (v) => (v*(0.92+rng()*0.16)).toFixed(2);
+      rows.push({
+        'ISIC Rev. 4 Title': sec, 'Country Name': cty, 'Country Sector': `${cty} — ${sec}`,
+        'Base Year Total Emissions Intensity': mk(b*1.12),
+        'Base Year Scope 1': mk(b*0.30), 'Base Year Scope 2': mk(b*0.22), 'Base Year Scope 3': mk(b*0.60),
+        '2020 Total Emissions Intensity': mk(b*1.06),
+        '2020 Scope 1': mk(b*0.29), '2020 Scope 2': mk(b*0.21), '2020 Scope 3': mk(b*0.56),
+        '2023 Total Emissions Intensity': mk(b*0.97),
+        '2023 Scope 1': mk(b*0.28), '2023 Scope 2': mk(b*0.19), '2023 Scope 3': mk(b*0.50),
+        '2024 Total Emissions Intensity': b.toFixed(2),
+        '2024 Scope 1': (b*0.27).toFixed(2), '2024 Scope 2': (b*0.18).toFixed(2), '2024 Scope 3': (b*0.55).toFixed(2),
+      });
+    });
+  });
+  return rows;
+}
+
+function parseCSV(text) {
+  const lines = text.trim().split('\n');
+  const hdr = lines[0].split(',').map(h=>h.trim().replace(/^"|"$/g,''));
+  return lines.slice(1).map(ln => {
+    const vals = ln.split(',').map(v=>v.trim().replace(/^"|"$/g,''));
+    const o={}; hdr.forEach((h,i)=>o[h]=vals[i]??''); return o;
+  });
+}
+
+let allData=[], filtered=[];
+
+// Boot: show sample data INSTANTLY, then quietly try to load real CSV
+allData = makeSample();
+filtered = [...allData];
+populateFilters(allData);
+applyFilters();
+
+(async()=>{
+  try {
+    const r = await fetch(CSV_URL, {signal:AbortSignal.timeout(8000)});
+    if(r.ok){
+      const txt = await r.text();
+      const real = parseCSV(txt);
+      if(real.length>0){ allData=real; filtered=[...real]; populateFilters(real); applyFilters(); }
+    }
+  } catch(e){}
+})();
+
+function switchTab(id,btn){
+  document.querySelectorAll('.pane').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.tb').forEach(b=>b.classList.remove('on'));
+  document.getElementById('pane-'+id).classList.add('on');
+  btn.classList.add('on');
+  if(id==='raw') renderTable();
+}
+
+function populateFilters(data){
+  const iSel=document.getElementById('f-isic');
+  const cSel=document.getElementById('f-country');
+  while(iSel.options.length>1)iSel.remove(1);
+  while(cSel.options.length>1)cSel.remove(1);
+  [...new Set(data.map(r=>r['ISIC Rev. 4 Title']).filter(Boolean))].sort()
+    .forEach(s=>{iSel.add(new Option(s,s));});
+  [...new Set(data.map(r=>r['Country Name']).filter(Boolean))].sort()
+    .forEach(c=>{cSel.add(new Option(c,c));});
+}
+
+function applyFilters(){
+  const isic=document.getElementById('f-isic').value;
+  const cty=document.getElementById('f-country').value;
+  const yr=document.getElementById('f-year').value;
+  filtered=allData.filter(r=>(!isic||r['ISIC Rev. 4 Title']===isic)&&(!cty||r['Country Name']===cty));
+  updateStats(yr); renderBar(yr); renderTrend(); renderTop10(yr);
+}
+
+const avg=(data,col)=>{
+  const v=data.map(r=>parseFloat(r[col])).filter(v=>!isNaN(v));
+  return v.length?v.reduce((a,b)=>a+b,0)/v.length:null;
+};
+
+function updateStats(yr){
+  const f=v=>v!=null?v.toFixed(1):'—';
+  document.getElementById('st-tot').textContent=f(avg(filtered,`${yr} Total Emissions Intensity`));
+  document.getElementById('st-s1').textContent=f(avg(filtered,`${yr} Scope 1`));
+  document.getElementById('st-s2').textContent=f(avg(filtered,`${yr} Scope 2`));
+  document.getElementById('st-s3').textContent=f(avg(filtered,`${yr} Scope 3`));
+}
+
+function renderBar(yr){
+  const grp={};
+  filtered.forEach(r=>{
+    const s=r['ISIC Rev. 4 Title'];if(!s)return;
+    if(!grp[s])grp[s]={s1:0,s2:0,s3:0,n:0};
+    grp[s].s1+=parseFloat(r[`${yr} Scope 1`])||0;
+    grp[s].s2+=parseFloat(r[`${yr} Scope 2`])||0;
+    grp[s].s3+=parseFloat(r[`${yr} Scope 3`])||0;
+    grp[s].n++;
+  });
+  const secs=Object.keys(grp).slice(0,10);
+  const maxV=Math.max(...secs.map(s=>(grp[s].s1+grp[s].s2+grp[s].s3)/grp[s].n))||1;
+  document.getElementById('ch-bar').innerHTML=secs.map(s=>{
+    const n=grp[s].n||1;
+    const s1=grp[s].s1/n,s2=grp[s].s2/n,s3=grp[s].s3/n,tot=s1+s2+s3;
+    const p=v=>((v/maxV)*100).toFixed(1);
+    return `<div class="bar-row">
+      <div class="bar-label" title="${s}">${s.length>22?s.slice(0,20)+'…':s}</div>
+      <div class="bar-track">
+        <div class="bar-seg" style="width:${p(s1)}%;background:var(--s1)"></div>
+        <div class="bar-seg" style="width:${p(s2)}%;background:var(--s2)"></div>
+        <div class="bar-seg" style="width:${p(s3)}%;background:var(--s3)"></div>
+      </div>
+      <div class="bar-val">${tot.toFixed(0)}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderTrend(){
+  const yrs=['Base Year','2020','2023','2024'];
+  const lbls=['Base','2020','2023','2024'];
+  const vals=yrs.map(y=>avg(filtered,`${y} Total Emissions Intensity`)||0);
+  const W=500,H=155,PL=42,PR=16,PT=16,PB=26;
+  const iW=W-PL-PR, iH=H-PT-PB;
+  const maxV=Math.max(...vals)*1.12||1;
+  const px=(i)=>PL+(i/(vals.length-1))*iW;
+  const py=(v)=>PT+iH-(v/maxV)*iH;
+  const pts=vals.map((v,i)=>[px(i),py(v)]);
+  const line=pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ');
+  const area=`${line} L${pts[pts.length-1][0].toFixed(1)},${(PT+iH).toFixed(1)} L${pts[0][0].toFixed(1)},${(PT+iH).toFixed(1)} Z`;
+  const grids=[0,.33,.67,1].map(f=>{
+    const y=py(maxV*f).toFixed(1);
+    return `<line x1="${PL}" y1="${y}" x2="${W-PR}" y2="${y}" stroke="rgba(255,255,255,0.07)" stroke-width="1"/>
+            <text x="${PL-4}" y="${y}" dy="4" text-anchor="end" fill="rgba(255,255,255,0.28)" font-size="8">${(maxV*f).toFixed(0)}</text>`;
+  }).join('');
+  const xlbls=pts.map((p,i)=>`<text x="${p[0].toFixed(1)}" y="${H-4}" text-anchor="middle" fill="rgba(255,255,255,0.32)" font-size="9">${lbls[i]}</text>`).join('');
+  const dots=pts.map((p,i)=>`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="4" fill="#F5A623" stroke="#0B1D3A" stroke-width="2"/>`).join('');
+  document.getElementById('ch-trend').innerHTML=
+    `<defs><linearGradient id="tg" x1="0" y1="0" x2="0" y2="1">
+       <stop offset="0%" stop-color="#F5A623" stop-opacity="0.28"/>
+       <stop offset="100%" stop-color="#F5A623" stop-opacity="0.02"/>
+     </linearGradient></defs>
+     ${grids}
+     <path d="${area}" fill="url(#tg)"/>
+     <path d="${line}" fill="none" stroke="#F5A623" stroke-width="2.2" stroke-linejoin="round"/>
+     ${dots}${xlbls}`;
+}
+
+function renderTop10(yr){
+  document.getElementById('top10-sub').textContent=`${yr} · average across countries`;
+  const grp={};
+  filtered.forEach(r=>{
+    const s=r['ISIC Rev. 4 Title'];if(!s)return;
+    if(!grp[s])grp[s]=[];
+    grp[s].push(parseFloat(r[`${yr} Total Emissions Intensity`])||0);
+  });
+  const top10=Object.entries(grp)
+    .map(([s,v])=>[s,v.reduce((a,b)=>a+b,0)/v.length])
+    .sort((a,b)=>b[1]-a[1]).slice(0,10);
+  const maxV=top10[0]?.[1]||1;
+  const COLS=['#3A86C8','#2E9E8F','#5B7FD4','#27A880','#4A6FC8','#1FA075','#6270C4','#17A58A','#5564B8','#14A080'];
+  document.getElementById('ch-top10').innerHTML=top10.map(([s,v],i)=>
+    `<div class="hbar-row">
+      <div class="hbar-label" title="${s}">${s.length>36?s.slice(0,34)+'…':s}</div>
+      <div class="hbar-track"><div class="hbar-fill" style="width:${(v/maxV*100).toFixed(1)}%;background:${COLS[i]}"></div></div>
+      <div class="hbar-val">${v.toFixed(1)}</div>
+    </div>`
+  ).join('');
+}
+
+function renderTable(){
+  const q=(document.getElementById('ts')?.value||'').toLowerCase();
+  const yr=document.getElementById('f-year').value;
+  const cols=['ISIC Rev. 4 Title','Country Name',
+    `${yr} Total Emissions Intensity`,`${yr} Scope 1`,`${yr} Scope 2`,`${yr} Scope 3`];
+  const sc={[`${yr} Scope 1`]:'cs1',[`${yr} Scope 2`]:'cs2',[`${yr} Scope 3`]:'cs3'};
+  const rows=filtered.filter(r=>!q||(r['ISIC Rev. 4 Title']||'').toLowerCase().includes(q)||(r['Country Name']||'').toLowerCase().includes(q)).slice(0,500);
+  document.getElementById('rc').textContent=`${rows.length} of ${filtered.length} rows`;
+  document.getElementById('th').innerHTML=`<tr>${cols.map(c=>`<th>${c}</th>`).join('')}</tr>`;
+  document.getElementById('tb').innerHTML=rows.map(r=>`<tr>${cols.map(c=>`<td class="${sc[c]||''}">${r[c]||'—'}</td>`).join('')}</tr>`).join('');
+}
+</script>
+</body>
+</html>
