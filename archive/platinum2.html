@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Platinum Model — TASA EFX</title>
+<!-- SheetJS to read the real Excel file -->
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+<style>
+:root{
+  --navy:#0B1D3A;--navy2:#0F2448;--gold:#F5A623;
+  --s1:#2E86AB;--s2:#17A589;--s3:#1A5276;
+  --dim:rgba(255,255,255,0.48);--bdr:rgba(255,255,255,0.09);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',Arial,sans-serif;background:var(--navy);color:#fff;min-height:100vh;}
+
+nav{display:flex;align-items:center;justify-content:space-between;padding:13px 36px;
+    background:rgba(11,29,58,0.97);border-bottom:1px solid var(--bdr);position:sticky;top:0;z-index:100;}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:#fff;}
+.nav-logo img{height:36px;border-radius:5px;}
+.logo-text{font-size:15px;font-weight:700;}
+.logo-text em{color:var(--gold);font-style:normal;}
+.nav-links{display:flex;gap:22px;}
+.nav-links a{color:var(--dim);text-decoration:none;font-size:14px;font-weight:500;transition:color .2s;}
+.nav-links a:hover{color:var(--gold);}
+.nav-links a.active{color:#fff;border-bottom:2px solid var(--gold);padding-bottom:2px;}
+
+.ph{padding:32px 36px 20px;border-bottom:1px solid var(--bdr);}
+.ph .ey{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:7px;}
+.ph h1{font-size:24px;font-weight:700;margin-bottom:5px;}
+.ph p{font-size:13px;color:var(--dim);line-height:1.6;max-width:540px;}
+
+.tabs{display:flex;padding:0 36px;border-bottom:1px solid var(--bdr);}
+.tb{padding:13px 20px;background:none;border:none;border-bottom:2.5px solid transparent;
+    color:var(--dim);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;
+    transition:color .2s,border-color .2s;margin-bottom:-1px;}
+.tb:hover{color:#fff;} .tb.on{color:#fff;border-bottom-color:var(--gold);}
+.pane{display:none;} .pane.on{display:block;}
+
+.filters{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end;
+         padding:18px 36px;border-bottom:1px solid var(--bdr);}
+.fg{display:flex;flex-direction:column;gap:4px;}
+.fg label{font-size:10px;text-transform:uppercase;letter-spacing:.13em;color:#6B88B4;font-weight:600;}
+.fg select{background:rgba(255,255,255,0.07);border:1.5px solid rgba(255,255,255,0.13);
+  color:#fff;border-radius:7px;padding:7px 12px;font-size:13px;font-family:inherit;
+  min-width:200px;appearance:none;cursor:pointer;transition:border-color .2s;}
+.fg select:focus{outline:none;border-color:var(--gold);}
+.fg select option{background:#0F2448;}
+
+.main{padding:24px 36px;}
+
+/* Upsell overlay */
+.upsell-overlay{position:fixed;inset:0;background:rgba(11,29,58,0.88);backdrop-filter:blur(8px);
+  z-index:500;display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .3s;}
+.upsell-overlay.show{opacity:1;pointer-events:all;}
+.upsell-card{background:#0F2448;border:2px solid var(--gold);border-radius:16px;
+  padding:44px 40px;max-width:440px;width:90%;text-align:center;
+  transform:translateY(16px);transition:transform .3s;}
+.upsell-overlay.show .upsell-card{transform:translateY(0);}
+.upsell-icon{font-size:40px;margin-bottom:16px;}
+.upsell-card h2{font-size:24px;font-weight:700;margin-bottom:10px;}
+.upsell-card h2 span{color:var(--gold);}
+.upsell-card p{font-size:14px;color:var(--dim);line-height:1.65;margin-bottom:28px;}
+.upsell-btn{display:inline-block;background:var(--gold);color:var(--navy);
+  padding:12px 30px;border-radius:8px;font-weight:700;text-decoration:none;font-size:14px;
+  transition:transform .15s,box-shadow .15s;cursor:pointer;border:none;font-family:inherit;}
+.upsell-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(245,166,35,0.35);}
+.upsell-dismiss{display:block;margin-top:12px;font-size:13px;color:var(--dim);
+  cursor:pointer;background:none;border:none;font-family:inherit;transition:color .2s;}
+.upsell-dismiss:hover{color:#fff;}
+
+/* Layout */
+.cg2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px;}
+.cg1{margin-bottom:18px;}
+.cb{background:rgba(255,255,255,0.03);border:1px solid var(--bdr);border-radius:11px;padding:18px;}
+.cb h3{font-size:12px;font-weight:600;color:rgba(255,255,255,0.72);margin-bottom:2px;}
+.cb .cs{font-size:11px;color:var(--dim);margin-bottom:14px;}
+
+/* Data header */
+.data-header{display:flex;align-items:baseline;gap:12px;margin-bottom:20px;flex-wrap:wrap;}
+.data-header h2{font-size:18px;font-weight:700;}
+.tag{padding:3px 10px;border-radius:4px;font-size:12px;font-weight:600;}
+.tag-gold{background:rgba(245,166,35,0.15);border:1px solid rgba(245,166,35,0.35);color:var(--gold);}
+.tag-dim{background:rgba(255,255,255,0.07);border:1px solid var(--bdr);color:rgba(255,255,255,0.6);}
+
+/* Scope bars */
+.scope-bar-list{display:flex;flex-direction:column;gap:12px;}
+.scope-item-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;}
+.scope-item-head .sn{font-size:13px;font-weight:600;}
+.scope-item-head .sv{font-size:12px;color:var(--dim);}
+.scope-item-head .sp{font-size:12px;font-weight:600;}
+.bar-track{height:10px;background:rgba(255,255,255,0.06);border-radius:5px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:5px;transition:width .5s ease;}
+
+/* Sankey canvas wrapper */
+.sankey-wrap{overflow-x:auto;border-radius:8px;background:linear-gradient(135deg,#e8f0f7,#f0f5f9);padding:16px;}
+.sankey-wrap canvas{display:block;}
+
+/* Tier 1 horiz bars */
+.hbar-chart{display:flex;flex-direction:column;gap:7px;}
+.hbar-row{display:flex;align-items:center;gap:8px;font-size:11px;}
+.hbar-label{width:170px;flex-shrink:0;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.hbar-track{flex:1;height:12px;background:rgba(255,255,255,0.05);border-radius:3px;overflow:hidden;display:flex;}
+.hbar-seg{height:100%;transition:width .5s ease;}
+.hbar-val{width:44px;flex-shrink:0;color:rgba(255,255,255,0.5);font-size:10px;text-align:right;}
+.leg{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:12px;}
+.li{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--dim);}
+.ld{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+
+/* Table */
+.tc{display:flex;gap:10px;align-items:center;margin-bottom:12px;flex-wrap:wrap;}
+.tc input{background:rgba(255,255,255,0.07);border:1.5px solid rgba(255,255,255,0.13);
+  color:#fff;border-radius:7px;padding:7px 11px;font-size:13px;font-family:inherit;width:240px;}
+.tc input::placeholder{color:#6B88B4;}
+.tc input:focus{outline:none;border-color:var(--gold);}
+.rc{font-size:12px;color:var(--dim);margin-left:auto;}
+.tw{overflow-x:auto;border-radius:9px;border:1px solid var(--bdr);}
+table.raw{width:100%;border-collapse:collapse;font-size:12px;}
+table.raw thead{background:rgba(255,255,255,0.04);}
+table.raw th{padding:10px 13px;text-align:left;font-size:10px;text-transform:uppercase;
+  letter-spacing:.10em;color:#6B88B4;border-bottom:1px solid var(--bdr);white-space:nowrap;font-weight:600;}
+table.raw td{padding:9px 13px;border-bottom:1px solid rgba(255,255,255,0.04);
+  color:rgba(255,255,255,0.78);font-variant-numeric:tabular-nums;}
+table.raw tr:last-child td{border-bottom:none;}
+table.raw tbody tr:hover td{background:rgba(255,255,255,0.025);}
+.cs1{color:var(--s1);font-weight:600;} .cs2{color:var(--s2);font-weight:600;} .cs3{color:var(--s3);font-weight:600;}
+
+.loading{display:flex;align-items:center;justify-content:center;min-height:200px;color:var(--dim);gap:12px;font-size:14px;}
+.spin{width:18px;height:18px;border:2px solid rgba(255,255,255,0.1);border-top-color:var(--gold);
+  border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:280px;color:var(--dim);text-align:center;gap:10px;}
+.empty .icon{font-size:36px;}
+.empty p{font-size:14px;line-height:1.6;max-width:360px;}
+.empty strong{color:rgba(255,255,255,0.75);}
+
+/* Toggle */
+.toggle-row{display:flex;gap:8px;align-items:center;margin-bottom:14px;}
+.toggle-lbl{font-size:11px;color:var(--dim);}
+.tog{padding:5px 14px;border-radius:20px;border:2px solid var(--s3);cursor:pointer;
+  font-size:11px;font-family:inherit;font-weight:600;transition:.2s;}
+.tog.on{background:var(--s3);color:#fff;border-color:var(--s3);}
+.tog.off{background:transparent;color:var(--s3);}
+
+footer{border-top:1px solid var(--bdr);padding:20px 36px;display:flex;justify-content:space-between;
+  align-items:center;color:rgba(255,255,255,0.25);font-size:12px;margin-top:40px;}
+@media(max-width:780px){
+  nav,footer{padding:12px 16px;}
+  .ph,.filters,.main{padding-left:16px;padding-right:16px;}
+  .tabs{padding:0 16px;} .cg2{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- UPSELL OVERLAY -->
+<div class="upsell-overlay" id="upsell">
+  <div class="upsell-card">
+    <div class="upsell-icon">✨</div>
+    <h2>Unlock <span>Platinum</span> Access</h2>
+    <!-- EDIT: update upsell copy and contact link -->
+    <p>You've selected a different sector. Full Platinum access gives you complete supply-chain Sankey diagrams and Tier 1 input breakdowns for any sector.</p>
+    <a href="mailto:info@tasa-efx.com?subject=Platinum Access" class="upsell-btn">Contact Us to Upgrade →</a>
+    <button class="upsell-dismiss" onclick="dismissUpsell()">Continue with default view</button>
+  </div>
+</div>
+
+<nav>
+  <a class="nav-logo" href="index.html">
+    <!-- LOGO: swap for <img src="assets/logo.jpeg" alt="TASA EFX"> -->
+    <div class="logo-text">TASA <em>EFX</em></div>
+  </a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="silver.html">Silver</a>
+    <a href="platinum.html" class="active">Platinum</a>
+    <a href="rlca.html">rLCA</a>
+  </div>
+</nav>
+
+<div class="ph">
+  <p class="ey">Platinum Model · Supply-Chain Analysis</p>
+  <h1>Sankey Emissions Flow Dashboard</h1>
+  <!-- EDIT: update description -->
+  <p>Trace emissions through Tier 1 input sectors. Data read directly from your Platinum Model Excel file.</p>
+</div>
+
+<div class="tabs">
+  <button class="tb on" onclick="switchTab('dash',this)">📊 Dashboard</button>
+  <button class="tb"    onclick="switchTab('raw',this)">📋 Raw Data</button>
+</div>
+
+<div class="filters">
+  <div class="fg">
+    <label>Sector</label>
+    <select id="f-sector" onchange="onSectorChange()"><option value="">Loading…</option></select>
+  </div>
+</div>
+
+<div id="pane-dash" class="pane on">
+  <div class="main" id="dash-content">
+    <div class="loading"><div class="spin"></div> Reading Excel file…</div>
+  </div>
+</div>
+
+<div id="pane-raw" class="pane">
+  <div class="main">
+    <div class="tc">
+      <input type="text" id="ts" placeholder="Search…" oninput="renderTable()">
+      <span class="rc" id="rc"></span>
+    </div>
+    <div class="tw">
+      <table class="raw"><thead id="th"></thead>
+      <tbody id="tb"><tr><td style="padding:36px;text-align:center;color:var(--dim)">Loading…</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <!-- EDIT: update copyright / contact -->
+  <span>© 2025 TASA EFX. All rights reserved.</span>
+  <span>Platinum Model · Emissions Intelligence Platform</span>
+</footer>
+
+<script>
+const XLSX_FILE    = 'TASA-EFX_KOR_Platinum_Model_2024_v3.0-test.xlsx';
+const SHEET_NAME   = 'Hotspots_USD';
+const DEFAULT_SECTOR = null; // set to first sector found in data
+const YEAR = '2024';
+
+const T1_COLORS=['#1ABC9C','#2980B9','#16A085','#1F618D','#148F77','#21618C',
+  '#0E6655','#1A7BBF','#117A65','#154360','#0B5345','#1B4F72','#0E6251',
+  '#1A5276','#117864','#145A32','#1B2631','#0A3D62','#1C6EA4','#186A3B','#1F3A93'];
+const S_COLORS=['#3A86C8','#2BAE96','#1B4F8A'];
+const C={s1:'#2E86AB',s2:'#17A589',s3:'#1A5276'};
+
+let allRows=[], sectors=[], currentSector=null, defaultSector=null, upsellDismissed=false;
+
+function switchTab(id,btn){
+  document.querySelectorAll('.pane').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.tb').forEach(b=>b.classList.remove('on'));
+  document.getElementById('pane-'+id).classList.add('on');
+  btn.classList.add('on');
+  if(id==='raw') renderTable();
+}
+
+function onSectorChange(){
+  const sel = document.getElementById('f-sector').value;
+  if(sel === defaultSector || upsellDismissed){
+    currentSector = sel;
+    renderDashboard(sel);
+  } else {
+    showUpsell();
+  }
+}
+
+function showUpsell(){ document.getElementById('upsell').classList.add('show'); }
+function dismissUpsell(){
+  upsellDismissed = true;
+  document.getElementById('upsell').classList.remove('show');
+  document.getElementById('f-sector').value = defaultSector;
+  currentSector = defaultSector;
+  renderDashboard(defaultSector);
+}
+
+function loadExcel(buf){
+  const wb = XLSX.read(buf, {type:'array'});
+  const ws = wb.Sheets[SHEET_NAME];
+  if(!ws){ showError(`Sheet "${SHEET_NAME}" not found in ${XLSX_FILE}`); return; }
+  // header is row index 1 (0-based), so use header:1 equivalent
+  const raw = XLSX.utils.sheet_to_json(ws, {header:1, defval:''});
+  // Find the header row (contains "Sectors")
+  let hdrIdx = raw.findIndex(r => r.some(c=>String(c).trim()==='Sectors'));
+  if(hdrIdx<0) hdrIdx=1;
+  const headers = raw[hdrIdx].map(h=>String(h).trim());
+  allRows = raw.slice(hdrIdx+1)
+    .filter(r=>r.some(c=>c!==''))
+    .map(r=>{
+      const o={}; headers.forEach((h,i)=>{ o[h]=r[i]??''; }); return o;
+    });
+  // Numeric cols
+  headers.forEach(h=>{
+    if(h!=='Sectors' && !h.toLowerCase().includes('input sector') && !h.toLowerCase().includes('tier 1 input')){
+      allRows.forEach(r=>{ const n=parseFloat(r[h]); r[h]=isNaN(n)?r[h]:n; });
+    }
+  });
+  sectors=[...new Set(allRows.map(r=>r['Sectors']).filter(Boolean))].sort();
+  defaultSector = sectors[0] || null;
+  currentSector = defaultSector;
+  const sel=document.getElementById('f-sector');
+  sel.innerHTML='';
+  sectors.forEach(s=>sel.add(new Option(s,s)));
+  renderDashboard(defaultSector);
+}
+
+function showError(msg){
+  document.getElementById('dash-content').innerHTML=`
+    <div class="empty"><div class="icon">⚠️</div>
+    <p>${msg}</p></div>`;
+}
+
+function getSectorData(sector){
+  const rows = allRows.filter(r=>r['Sectors']===sector);
+  if(!rows.length) return null;
+  const first = rows[0];
+  const yPfx = YEAR+' ';
+  const tot = parseFloat(first[yPfx+'Total Emissions Intensity'])||0;
+  const s1  = parseFloat(first[yPfx+'Scope 1'])||0;
+  const s2  = parseFloat(first[yPfx+'Scope 2'])||0;
+  const s3  = parseFloat(first[yPfx+'Scope 3'])||0;
+
+  // Tier 1: de-duplicate by input sector name
+  const t1Key = yPfx+'Tier 1 Input Sector';
+  const seen=new Set();
+  const tier1=[];
+  rows.forEach(r=>{
+    const lbl=String(r[t1Key]||'').trim();
+    if(!lbl||seen.has(lbl)) return;
+    seen.add(lbl);
+    const tt=parseFloat(r[yPfx+'Tier 1 Total Emissions Intensity'])||0;
+    const ts1=parseFloat(r[yPfx+'Tier 1 Scope 1'])||0;
+    const ts2=parseFloat(r[yPfx+'Tier 1 Scope 2'])||0;
+    const ts3=parseFloat(r[yPfx+'Tier 1 Scope 3'])||0;
+    tier1.push({label:lbl,total:tt,s1:ts1,s2:ts2,s3:ts3,
+      pct:tot>0?+(tt/tot*100).toFixed(1):0,
+      s1pct:tot>0?+(ts1/tot*100).toFixed(1):0,
+      s2pct:tot>0?+(ts2/tot*100).toFixed(1):0,
+      s3pct:tot>0?+(ts3/tot*100).toFixed(1):0,
+    });
+  });
+  // Sort: non-"Other" by total desc, then "Other" at end
+  const notOther=tier1.filter(t=>t.label.trim()!=='Other').sort((a,b)=>b.total-a.total);
+  const other=tier1.filter(t=>t.label.trim()==='Other');
+  const sorted=[...notOther,...other];
+  return {sector,tot,s1,s2,s3,tier1:sorted,
+    totPct:100,
+    s1pct:tot>0?+(s1/tot*100).toFixed(1):0,
+    s2pct:tot>0?+(s2/tot*100).toFixed(1):0,
+    s3pct:tot>0?+(s3/tot*100).toFixed(1):0,
+  };
+}
+
+let canvasMode='detail';
+
+function renderDashboard(sector){
+  const el=document.getElementById('dash-content');
+  if(!sector){ el.innerHTML='<div class="empty"><div class="icon">🔍</div><p>Select a sector above.</p></div>'; return; }
+  const d=getSectorData(sector);
+  if(!d){ el.innerHTML='<div class="empty"><div class="icon">⚠️</div><p>No data for this sector.</p></div>'; return; }
+
+  el.innerHTML=`
+    <div class="data-header">
+      <h2>${d.sector}</h2>
+      <span class="tag tag-gold">${YEAR}</span>
+      <span class="tag tag-dim">${d.tot.toFixed(2)} Mg CO₂e / M USD total</span>
+    </div>
+    <div class="cg2">
+      <div class="cb">
+        <h3>Scope Breakdown</h3>
+        <p class="cs">Exact values from your Excel file</p>
+        <div class="scope-bar-list" id="scope-bars"></div>
+      </div>
+      <div class="cb">
+        <h3>Top Tier 1 Inputs by Scope</h3>
+        <p class="cs">Stacked Scope 1/2/3 per input sector</p>
+        <div class="leg">
+          <div class="li"><div class="ld" style="background:var(--s1)"></div>Scope 1</div>
+          <div class="li"><div class="ld" style="background:var(--s2)"></div>Scope 2</div>
+          <div class="li"><div class="ld" style="background:var(--s3)"></div>Scope 3</div>
+        </div>
+        <div class="hbar-chart" id="ch-tier1"></div>
+      </div>
+    </div>
+    <div class="cg1 cb">
+      <h3>Emissions Structure — Baseline Sankey</h3>
+      <p class="cs">Sector → Scope → Tier 1 Input → Tier 1 Scope</p>
+      <div class="toggle-row">
+        <span class="toggle-lbl">Tier 1 Scope view:</span>
+        <button class="tog on"  id="btn-detail" onclick="setCanvasMode('detail')">Broken Out</button>
+        <button class="tog off" id="btn-summed" onclick="setCanvasMode('summed')">Summed</button>
+      </div>
+      <div class="sankey-wrap"><canvas id="sankey-canvas"></canvas></div>
+    </div>`;
+
+  // Scope bars
+  const scopes=[
+    {name:'Scope 1',val:d.s1,pct:d.s1pct,color:C.s1},
+    {name:'Scope 2',val:d.s2,pct:d.s2pct,color:C.s2},
+    {name:'Scope 3',val:d.s3,pct:d.s3pct,color:C.s3},
+  ];
+  document.getElementById('scope-bars').innerHTML=scopes.map(sc=>`
+    <div class="scope-item">
+      <div class="scope-item-head">
+        <span class="sn" style="color:${sc.color}">${sc.name}</span>
+        <span class="sv">${sc.val.toFixed(2)} Mg CO₂e/M USD</span>
+        <span class="sp" style="color:${sc.color}">${sc.pct}%</span>
+      </div>
+      <div class="bar-track"><div class="bar-fill" style="width:${sc.pct}%;background:${sc.color}"></div></div>
+    </div>`).join('');
+
+  // Tier 1 horiz bars
+  const maxT=Math.max(...d.tier1.map(t=>t.total))||1;
+  document.getElementById('ch-tier1').innerHTML=d.tier1.slice(0,12).map(t=>{
+    const p=v=>((v/maxT)*100).toFixed(1);
+    return `<div class="hbar-row">
+      <div class="hbar-label" title="${t.label}">${t.label.length>22?t.label.slice(0,20)+'…':t.label}</div>
+      <div class="hbar-track">
+        <div class="hbar-seg" style="width:${p(t.s1)}%;background:var(--s1)"></div>
+        <div class="hbar-seg" style="width:${p(t.s2)}%;background:var(--s2)"></div>
+        <div class="hbar-seg" style="width:${p(t.s3)}%;background:var(--s3)"></div>
+      </div>
+      <div class="hbar-val">${t.total.toFixed(1)}</div>
+    </div>`;
+  }).join('');
+
+  // Build summed data
+  d.summed=[
+    {label:'Scope 1',val:d.tier1.reduce((a,t)=>a+t.s1,0),color:C.s1},
+    {label:'Scope 2',val:d.tier1.reduce((a,t)=>a+t.s2,0),color:C.s2},
+    {label:'Scope 3',val:d.tier1.reduce((a,t)=>a+t.s3,0),color:C.s3},
+  ].map(s=>({...s,pct:d.tot>0?+(s.val/d.tot*100).toFixed(1):0}));
+
+  window._ptData=d;
+  canvasMode='detail';
+  drawCanvas(d,'detail');
+}
+
+function setCanvasMode(mode){
+  canvasMode=mode;
+  document.getElementById('btn-detail').className='tog '+(mode==='detail'?'on':'off');
+  document.getElementById('btn-summed').className='tog '+(mode==='summed'?'on':'off');
+  drawCanvas(window._ptData, mode);
+}
+
+function drawCanvas(d, mode){
+  const C2=document.getElementById('sankey-canvas');
+  if(!C2) return;
+  const TOP=68,LPAD=12,FULL_H=Math.max(600,d.tier1.length*42),BOX_GAP=3,MIN_BOX=10;
+  const ANC_W=110,SC_W=100,T1_W=220,LF_W=100,GAP=130;
+  const ANC_X=LPAD, SC_X=ANC_X+ANC_W+GAP, T1_X=SC_X+SC_W+GAP, LF_X=T1_X+T1_W+GAP;
+  const TW=LF_X+LF_W+LPAD+8, TH=TOP+FULL_H+30;
+  const DPR=window.devicePixelRatio||1;
+  C2.width=TW*DPR; C2.height=TH*DPR;
+  C2.style.width=TW+'px'; C2.style.height=TH+'px';
+  const ctx=C2.getContext('2d'); ctx.scale(DPR,DPR);
+
+  function hexToRgb(h){return[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];}
+  function rgba(h,a){const[r,g,b]=hexToRgb(h);return`rgba(${r},${g},${b},${a})`;}
+  function rRect(x,y,w,h,r){ctx.beginPath();ctx.roundRect(x,y,w,h,r);}
+
+  function propH(pcts,totalH,gap){
+    const n=pcts.length,tot=pcts.reduce((a,b)=>a+b,0)||1,avail=totalH-gap*(n-1);
+    let hs=pcts.map(p=>Math.max(MIN_BOX,(p/tot)*avail));
+    let diff=hs.reduce((a,b)=>a+b,0)-avail;
+    if(Math.abs(diff)>0.5){
+      const adj=hs.map((h,i)=>({i,h})).filter(o=>o.h>MIN_BOX).sort((a,b)=>b.h-a.h);
+      for(const o of adj){const cut=Math.min(Math.abs(diff),hs[o.i]-MIN_BOX);hs[o.i]-=Math.sign(diff)*cut;diff-=Math.sign(diff)*cut;if(Math.abs(diff)<0.5)break;}
+    }
+    return hs;
+  }
+
+  function drawBox(x,y,w,h,color,label,pct,fs){
+    fs=fs||9;
+    const[r,g,b]=hexToRgb(color);
+    const gr=ctx.createLinearGradient(x,y,x,y+h);
+    gr.addColorStop(0,`rgba(${Math.min(r+28,255)},${Math.min(g+28,255)},${Math.min(b+28,255)},1)`);
+    gr.addColorStop(1,color);
+    ctx.fillStyle=gr; rRect(x,y,w,h,3); ctx.fill();
+    ctx.strokeStyle=rgba(color,0.4); ctx.lineWidth=0.6; rRect(x,y,w,h,3); ctx.stroke();
+    if(h<7) return;
+    ctx.textBaseline='middle'; ctx.textAlign='left';
+    if(h>=20){
+      ctx.font=`600 ${fs}px 'Segoe UI',Arial,sans-serif`; ctx.fillStyle='rgba(255,255,255,0.95)';
+      let txt=label; const maxW=w-8;
+      while(ctx.measureText(txt).width>maxW&&txt.length>3) txt=txt.slice(0,-1);
+      if(txt!==label) txt=txt.slice(0,-1)+'…';
+      ctx.fillText(txt,x+5,y+h*0.36);
+      ctx.font=`${fs-1}px 'Segoe UI',Arial,sans-serif`; ctx.fillStyle='rgba(255,255,255,0.65)';
+      ctx.fillText(pct+'%',x+5,y+h*0.68);
+    } else {
+      ctx.font=`${fs-1}px 'Segoe UI',Arial,sans-serif`; ctx.fillStyle='rgba(255,255,255,0.85)';
+      ctx.fillText(pct+'%',x+5,y+h/2);
+    }
+  }
+
+  function ribbon(x1,y1t,y1b,x2,y2t,y2b,color,a){
+    const mx=x1+(x2-x1)*0.52;
+    ctx.beginPath(); ctx.moveTo(x1,y1t);
+    ctx.bezierCurveTo(mx,y1t,mx,y2t,x2,y2t); ctx.lineTo(x2,y2b);
+    ctx.bezierCurveTo(mx,y2b,mx,y1b,x1,y1b); ctx.closePath();
+    ctx.fillStyle=rgba(color,a); ctx.fill();
+  }
+
+  function hdr(x,w,l1,l2){
+    ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillStyle='#0D2F4F';
+    ctx.font="700 10px 'Segoe UI',Arial,sans-serif"; ctx.fillText(l1,x+w/2,TOP-(l2?22:12));
+    if(l2){ctx.font="400 8px 'Segoe UI',Arial,sans-serif";ctx.fillStyle='#4A6A8A';ctx.fillText(l2,x+w/2,TOP-9);}
+    ctx.strokeStyle='rgba(26,63,100,0.15)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(x+3,TOP-2);ctx.lineTo(x+w-3,TOP-2);ctx.stroke();
+  }
+
+  hdr(ANC_X,ANC_W,'BASELINE','STRUCTURE');
+  hdr(SC_X,SC_W,'SCOPE',null);
+  hdr(T1_X,T1_W,'TIER 1','Input Sector');
+  hdr(LF_X,LF_W,mode==='detail'?'TIER 1':'TIER 1',mode==='detail'?'Scope':'Scope (summed)');
+
+  // Anchor
+  const chev=16;
+  const ag=ctx.createLinearGradient(ANC_X,TOP,ANC_X,TOP+FULL_H);
+  ag.addColorStop(0,'#1A4A72');ag.addColorStop(1,'#0D2F4F');
+  ctx.fillStyle=ag; ctx.beginPath();
+  ctx.moveTo(ANC_X,TOP);ctx.lineTo(ANC_X+ANC_W-chev,TOP);
+  ctx.lineTo(ANC_X+ANC_W,TOP+FULL_H/2);ctx.lineTo(ANC_X+ANC_W-chev,TOP+FULL_H);
+  ctx.lineTo(ANC_X,TOP+FULL_H);ctx.closePath();ctx.fill();
+  const acx=ANC_X+(ANC_W-chev)/2;
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.font="600 11px 'Segoe UI',Arial,sans-serif";ctx.fillStyle='#fff';
+  let lbl=d.sector;if(lbl.length>14)lbl=lbl.slice(0,12)+'…';
+  ctx.fillText(lbl,acx,TOP+FULL_H*0.40);
+  ctx.font="400 8px 'Segoe UI',Arial,sans-serif";ctx.fillStyle='rgba(255,255,255,0.6)';
+  ctx.fillText(d.tot.toFixed(1)+' Mg',acx,TOP+FULL_H*0.53);
+
+  // Scopes
+  const scPcts=[d.s1pct,d.s2pct,d.s3pct];
+  const scH=propH(scPcts,FULL_H,BOX_GAP);
+  const scY=[]; let sy=TOP; scH.forEach(h=>{scY.push(sy);sy+=h+BOX_GAP;});
+  const scColors=[C.s1,C.s2,C.s3];
+  const scVals=[d.s1,d.s2,d.s3];
+
+  // anchor→scope ribbons (S3 behind)
+  const ancSl=[]; let ac2=TOP;
+  scPcts.forEach((p,i)=>{
+    const sh=(p/scPcts.reduce((a,b)=>a+b,0)||1)*FULL_H;
+    ancSl.push({top:ac2,bot:ac2+sh,scY:scY[i],h:scH[i],color:scColors[i]});
+    ac2+=sh;
+  });
+  [2,1,0].forEach(i=>{
+    const sl=ancSl[i];
+    ribbon(ANC_X+ANC_W-chev,sl.top,sl.bot,SC_X,sl.scY,sl.scY+sl.h,sl.color,0.22);
+  });
+  const scopeBoxes=[];
+  scH.forEach((h,i)=>{
+    drawBox(SC_X,scY[i],SC_W,h,scColors[i],['Scope 1','Scope 2','Scope 3'][i],scPcts[i],10);
+    scopeBoxes.push({y:scY[i],h,color:scColors[i],pct:scPcts[i]});
+  });
+
+  // Tier 1
+  const t1Pcts=d.tier1.map(t=>t.pct);
+  const t1H=propH(t1Pcts,FULL_H,BOX_GAP);
+  const s3b=scopeBoxes[2]; let s3cur=s3b.y;
+  const t1Boxes=[]; let tY=TOP;
+  d.tier1.forEach((t,i)=>{
+    const h=t1H[i],col=T1_COLORS[i%T1_COLORS.length];
+    const slH=(t.pct/(s3b.pct||1))*s3b.h;
+    ribbon(SC_X+SC_W,s3cur,s3cur+slH,T1_X,tY,tY+h,col,0.20);
+    s3cur+=slH; tY+=h+BOX_GAP;
+  });
+  tY=TOP;
+  d.tier1.forEach((t,i)=>{
+    const h=t1H[i],col=T1_COLORS[i%T1_COLORS.length];
+    t1Boxes.push({y:tY,h,color:col,pct:t.pct});
+    drawBox(T1_X,tY,T1_W,h,col,t.label,t.pct,8);
+    tY+=h+BOX_GAP;
+  });
+
+  if(mode==='detail'){
+    const LGAP=2,N=d.tier1.length*3,LAVAIL=FULL_H-LGAP*(N-1);
+    const allPcts=[]; d.tier1.forEach(t=>allPcts.push(t.s1pct,t.s2pct,t.s3pct));
+    const lt=allPcts.reduce((a,b)=>a+b,0)||1;
+    const ML=Math.max(3,LAVAIL/N*0.2);
+    let alH=allPcts.map(p=>Math.max(ML,(p/lt)*LAVAIL));
+    const ls=alH.reduce((a,b)=>a+b,0); alH=alH.map(h=>h/ls*LAVAIL);
+    const groups=[]; let fi=0;
+    d.tier1.forEach((t,i)=>{
+      groups.push({tb:t1Boxes[i],i,
+        lPcts:[t.s1pct,t.s2pct,t.s3pct],
+        lVals:[t.s1,t.s2,t.s3],
+        lh:[alH[fi],alH[fi+1],alH[fi+2]]});
+      fi+=3;
+    });
+    let lY=TOP; groups.forEach(g=>{g.startY=lY;g.lh.forEach(h=>{lY+=h+LGAP;});});
+    groups.forEach(g=>{
+      let t1c=g.tb.y,ly=g.startY; const pt=g.lPcts.reduce((a,b)=>a+b,0)||1;
+      g.lh.forEach((lh,si)=>{
+        const slH=(g.lPcts[si]/pt)*g.tb.h;
+        ribbon(T1_X+T1_W,t1c,t1c+slH,LF_X,ly,ly+lh,S_COLORS[si],0.20);
+        t1c+=slH;ly+=lh+LGAP;
+      });
+    });
+    groups.forEach(g=>{
+      let ly=g.startY;
+      g.lh.forEach((lh,si)=>{
+        drawBox(LF_X,ly,LF_W,lh,S_COLORS[si],['S1','S2','S3'][si],g.lPcts[si],8);
+        ly+=lh+LGAP;
+      });
+    });
+  } else {
+    const smH=propH(d.summed.map(s=>s.pct),FULL_H,BOX_GAP);
+    let smY=TOP;
+    const bTops=smH.map(h=>{const y=smY;smY+=h+BOX_GAP;return y;});
+    d.tier1.forEach((t,i)=>{
+      const tb=t1Boxes[i];
+      let t1c=tb.y; const lP=[t.s1pct,t.s2pct,t.s3pct]; const pt=lP.reduce((a,b)=>a+b,0)||1;
+      lP.forEach((p,si)=>{
+        const slH=(p/pt)*tb.h;
+        ribbon(T1_X+T1_W,t1c,t1c+slH,LF_X,bTops[si],bTops[si]+smH[si],S_COLORS[si],0.10);
+        t1c+=slH;
+      });
+    });
+    smY=TOP; d.summed.forEach((sm,si)=>{
+      const h=smH[si];
+      drawBox(LF_X,smY,LF_W,h,S_COLORS[si],sm.label,sm.pct,10);
+      smY+=h+BOX_GAP;
+    });
+  }
+
+  ctx.font="400 7px 'Segoe UI',Arial,sans-serif";ctx.fillStyle='rgba(80,110,140,0.5)';
+  ctx.textAlign='left';ctx.textBaseline='top';
+  ctx.fillText('Mg CO₂e per Million USD · '+YEAR,ANC_X,TOP+FULL_H+10);
+}
+
+function renderTable(){
+  const q=(document.getElementById('ts')?.value||'').toLowerCase();
+  const rows=allRows.filter(r=>!q||JSON.stringify(r).toLowerCase().includes(q)).slice(0,400);
+  document.getElementById('rc').textContent=`${rows.length} of ${allRows.length} rows`;
+  if(!rows.length){document.getElementById('th').innerHTML='';document.getElementById('tb').innerHTML='<tr><td style="padding:30px;text-align:center;color:var(--dim)">No rows</td></tr>';return;}
+  const cols=Object.keys(rows[0]).filter(c=>c).slice(0,10);
+  document.getElementById('th').innerHTML=`<tr>${cols.map(c=>`<th>${c}</th>`).join('')}</tr>`;
+  document.getElementById('tb').innerHTML=rows.map(r=>`<tr>${cols.map(c=>`<td>${r[c]??'—'}</td>`).join('')}</tr>`).join('');
+}
+
+// Boot
+(async()=>{
+  try{
+    const r=await fetch(XLSX_FILE);
+    if(!r.ok) throw new Error('not found');
+    const buf=await r.arrayBuffer();
+    loadExcel(new Uint8Array(buf));
+  } catch(e){
+    showError(`Could not load <strong>${XLSX_FILE}</strong>. Make sure the file is in the root of your GitHub repo.`);
+  }
+})();
+</script>
+</body>
+</html>
