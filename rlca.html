@@ -354,13 +354,8 @@ let efData      = {};   // { 'Total Emissions Intensity': val, 'Scope 1': val, '
 let sortCol     = 'combined';
 let sortDir     = 'desc';
 
-// ── Load Excel — reads both sheets ───────────────────────────
-function loadExcel(buf) {
-  const wb = XLSX.read(buf, {
-    type:'array',
-    cellStyles:false, cellFormula:false, cellHTML:false, cellNF:false, sheetStubs:false
-  });
-
+// ── Load Excel — accepts pre-parsed workbook ─────────────────
+function loadExcel(wb) {
   // ── Sheet 1: 10 Tiers_all_sectors ──
   const ws = wb.Sheets[SHEET_NAME];
   if (!ws) { showError(`Sheet "${SHEET_NAME}" not found. Available: ${wb.SheetNames.join(', ')}`); return; }
@@ -811,6 +806,7 @@ document.getElementById('upsell').addEventListener('click', function(e) {
 // ── Boot ──────────────────────────────────────────────────────
 (async () => {
   try {
+    // Fetch both files in parallel but process Excel first — don't wait for CSV to show charts
     const [silverResp, xlsxResp] = await Promise.all([
       fetch(SILVER_CSV),
       fetch(XLSX_FILE)
@@ -818,9 +814,29 @@ document.getElementById('upsell').addEventListener('click', function(e) {
     if (!silverResp.ok) throw new Error(`Silver CSV not found: ${SILVER_CSV}`);
     if (!xlsxResp.ok)   throw new Error(`Excel file not found: ${XLSX_FILE}`);
 
+    // Read both bodies in parallel
     const [silverText, xlsxBuf] = await Promise.all([
       silverResp.text(),
       xlsxResp.arrayBuffer()
     ]);
 
-    buildSilverMap(silv
+    // Parse Excel — restricted to only the 2 sheets we need, fastest options
+    const wb = XLSX.read(new Uint8Array(xlsxBuf), {
+      type: 'array',
+      sheets: [SHEET_NAME, EF_SHEET],  // only parse what we use
+      cellStyles: false,
+      cellFormula: false,
+      cellHTML: false,
+      cellNF: false,
+      sheetStubs: false,
+      dense: true                       // array-of-arrays internally — much faster
+    });
+    loadExcel(wb);
+
+    // Silver CSV can finish after — only drives filter dropdowns
+    buildSilverMap(silverText);
+
+  } catch(e) {
+    showError(`<strong>${e.message}</strong>`);
+  }
+})();
