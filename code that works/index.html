@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>TASA EFX — Emissions Intelligence Platform</title>
+<style>
+  :root {
+    --navy:   #0B1D3A;
+    --blue:   #1A4B8C;
+    --gold:   #F5A623;
+    --border: rgba(255,255,255,0.10);
+    --dim:    rgba(255,255,255,0.50);
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:'Segoe UI',Arial,sans-serif; background:var(--navy); color:#fff; min-height:100vh; }
+
+  nav {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:14px 36px; background:rgba(11,29,58,0.96);
+    border-bottom:1px solid var(--border); position:sticky; top:0; z-index:100;
+  }
+  .nav-logo { display:flex; align-items:center; gap:12px; text-decoration:none; color:#fff; }
+  .nav-logo img { height:38px; border-radius:5px; }
+  .nav-logo span { font-size:16px; font-weight:700; }
+  .nav-links { display:flex; gap:24px; }
+  .nav-links a { color:var(--dim); text-decoration:none; font-size:14px; font-weight:500; transition:color 0.2s; }
+  .nav-links a:hover { color:var(--gold); }
+  .nav-links a.active { color:#fff; border-bottom:2px solid var(--gold); padding-bottom:2px; }
+
+  .hero { padding:80px 36px 60px; max-width:1100px; margin:0 auto; }
+  .hero .eyebrow { font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:var(--gold); margin-bottom:16px; }
+  .hero h1 { font-size:clamp(32px,5vw,58px); font-weight:700; letter-spacing:-0.02em; line-height:1.08; margin-bottom:20px; }
+  .hero h1 span { color:var(--gold); }
+  .hero p { font-size:16px; line-height:1.7; color:var(--dim); max-width:520px; margin-bottom:40px; }
+  .hero-btns { display:flex; gap:14px; flex-wrap:wrap; }
+  .btn-primary { background:var(--gold); color:var(--navy); padding:13px 30px; border-radius:8px; font-weight:700; text-decoration:none; font-size:14px; transition:transform 0.15s,box-shadow 0.15s; }
+  .btn-primary:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(245,166,35,0.35); }
+  .btn-ghost { border:1.5px solid rgba(255,255,255,0.25); color:#fff; padding:13px 30px; border-radius:8px; font-weight:500; text-decoration:none; font-size:14px; transition:border-color 0.2s,color 0.2s; }
+  .btn-ghost:hover { border-color:var(--gold); color:var(--gold); }
+
+  .cards-section { padding:0 36px 80px; max-width:1100px; margin:0 auto; }
+  .section-lbl { font-size:11px; letter-spacing:0.16em; text-transform:uppercase; color:#6B88B4; margin-bottom:32px; }
+  .cards-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
+
+  .card {
+    background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:14px;
+    padding:30px 26px; text-decoration:none; color:inherit; display:block;
+    position:relative; overflow:hidden;
+    transition:transform 0.2s, border-color 0.2s, background 0.2s;
+  }
+  .card::after { content:''; position:absolute; top:0;left:0;right:0; height:3px; background:var(--accent,#6B88B4); transform:scaleX(0); transform-origin:left; transition:transform 0.3s; }
+  .card:hover { transform:translateY(-4px); border-color:rgba(255,255,255,0.18); background:rgba(255,255,255,0.06); }
+  .card:hover::after { transform:scaleX(1); }
+
+  .card-badge { display:inline-block; padding:3px 11px; border-radius:20px; font-size:11px; font-weight:600; letter-spacing:0.07em; text-transform:uppercase; margin-bottom:16px; }
+  .badge-silver  { background:rgba(107,136,180,0.2); color:#9BB5DA; }
+  .badge-plat    { background:rgba(245,166,35,0.15); color:var(--gold); }
+  .badge-rlca    { background:rgba(27,188,156,0.15); color:#1ABC9C; }
+
+  .card h3 { font-size:19px; font-weight:700; margin-bottom:10px; line-height:1.25; }
+  .card p  { font-size:13px; line-height:1.6; color:var(--dim); margin-bottom:24px; }
+  .card-pills { display:flex; gap:8px; flex-wrap:wrap; }
+  .pill { padding:3px 9px; border-radius:4px; font-size:11px; background:rgba(255,255,255,0.07); color:rgba(255,255,255,0.45); }
+
+  .card-arrow { position:absolute; bottom:26px; right:26px; width:32px; height:32px; border-radius:50%; border:1.5px solid rgba(255,255,255,0.15); display:flex; align-items:center; justify-content:center; transition:background 0.2s,border-color 0.2s; }
+  .card:hover .card-arrow { background:var(--gold); border-color:var(--gold); }
+  .card:hover .card-arrow path { stroke:#0B1D3A; }
+
+  footer { border-top:1px solid var(--border); padding:22px 36px; display:flex; justify-content:space-between; align-items:center; color:rgba(255,255,255,0.28); font-size:12px; }
+
+  @media(max-width:800px){
+    nav,footer{padding:12px 16px;}
+    .hero,.cards-section{padding-left:16px;padding-right:16px;}
+    .cards-grid{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html">
+    <!-- PLACEHOLDER: replace with <img src="assets/logo.jpeg" alt="TASA EFX"> -->
+    <span>TASA <span style="color:var(--gold)">EFX</span></span>
+  </a>
+  <div class="nav-links">
+    <a href="index.html" class="active">Home</a>
+    <a href="silver.html">Silver</a>
+    <a href="platinum.html">Platinum</a>
+    <a href="rlca.html">rLCA</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <!-- PLACEHOLDER: update eyebrow / tagline / description -->
+  <p class="eyebrow">TASA EFX · Emissions Intelligence</p>
+  <h1>Sector Carbon Data<br><span>You Can Act On</span></h1>
+  <p>
+    From NAICS/ISIC silver benchmarks to platinum supply-chain Sankeys and rapid lifecycle assessments — TASA EFX delivers emissions intelligence for every stage of your analysis.
+  </p>
+  <div class="hero-btns">
+    <a href="silver.html" class="btn-primary">Explore Silver Model</a>
+    <a href="platinum.html" class="btn-ghost">Explore Platinum Model</a>
+    <a href="rlca.html" class="btn-ghost">Explore rLCA Model</a>
+  </div>
+</section>
+
+<section class="cards-section">
+  <p class="section-lbl">Platform Tools</p>
+  <div class="cards-grid">
+
+    <a href="silver.html" class="card" style="--accent:#6B88B4;">
+      <span class="card-badge badge-silver">Silver</span>
+      <h3>NAICS / ISIC<br>Emissions Tables</h3>
+      <!-- PLACEHOLDER: update card descriptions -->
+      <p>Benchmark Scope 1, 2 &amp; 3 emissions intensity across industry sectors and countries for 2020–2024.</p>
+      <div class="card-pills">
+        <span class="pill">Scope 1/2/3</span><span class="pill">2020–2024</span><span class="pill">NAICS · ISIC</span>
+      </div>
+      <div class="card-arrow">
+        <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+          <path d="M2 11L11 2M11 2H4.5M11 2V8.5" stroke="white" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </a>
+
+    <a href="platinum.html" class="card" style="--accent:#F5A623;">
+      <span class="card-badge badge-plat">Platinum</span>
+      <h3>Supply-Chain<br>Sankey Analysis</h3>
+      <p>Trace emissions through Tier 1 input sectors with an interactive Sankey flow diagram.</p>
+      <div class="card-pills">
+        <span class="pill">Sankey Flow</span><span class="pill">Tier 1 Inputs</span><span class="pill">Deep Dive</span>
+      </div>
+      <div class="card-arrow">
+        <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+          <path d="M2 11L11 2M11 2H4.5M11 2V8.5" stroke="white" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </a>
+
+    <a href="rlca.html" class="card" style="--accent:#1ABC9C;">
+      <span class="card-badge badge-rlca">rLCA</span>
+      <h3>Rapid Lifecycle<br>Assessment</h3>
+      <p>Baseline emissions structure at the sector level — scope breakdown, Tier 1 hotspots, and lifecycle flow.</p>
+      <div class="card-pills">
+        <span class="pill">Lifecycle</span><span class="pill">Hotspot View</span><span class="pill">Baseline</span>
+      </div>
+      <div class="card-arrow">
+        <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+          <path d="M2 11L11 2M11 2H4.5M11 2V8.5" stroke="white" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </a>
+
+  </div>
+</section>
+
+<footer>
+  <!-- PLACEHOLDER: update copyright / contact -->
+  <span>© 2025 TASA EFX. All rights reserved.</span>
+  <span>Emissions Intelligence Platform</span>
+</footer>
+
+</body>
+</html>
