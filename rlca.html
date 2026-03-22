@@ -36,9 +36,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:0 32px
     background:rgba(5,13,26,0.97);border-bottom:1px solid var(--border);
     position:sticky;top:0;z-index:100;backdrop-filter:blur(12px);}
 .nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--white);}
-.nav-logo-icon{width:34px;height:34px;border-radius:7px;background:var(--primary);
-  display:flex;align-items:center;justify-content:center;
-  font-size:13px;font-weight:800;color:#fff;letter-spacing:-0.03em;flex-shrink:0;}
+.nav-logo-icon{height:36px;width:auto;display:block;flex-shrink:0;}
 .logo-text{font-size:15px;font-weight:700;letter-spacing:-0.01em;}
 .logo-text em{color:var(--orange);font-style:normal;}
 .nav-links{display:flex;gap:4px;}
@@ -201,7 +199,7 @@ footer{border-top:1px solid var(--border);padding:18px 24px;display:flex;justify
     <h2>Unlock <span>Full rLCA</span> Access</h2>
     <p id="upsell-msg">rLCA reports for additional countries, sectors, and years are available through TASA EFX. <strong>Contact us</strong> to get access to the full dataset.</p>
     <div class="upsell-actions">
-      <a href="mailto:info@tasaanalytics.com" class="upsell-btn">Contact TASA EFX →</a>
+      <a href="/cdn-cgi/l/email-protection#dab3b4bcb59aaebba9bbbbb4bbb6a3aeb3b9a9f4b9b5b7" class="upsell-btn">Contact TASA EFX →</a>
       <button class="upsell-dismiss" onclick="dismissUpsell()">Go back to default view</button>
     </div>
   </div>
@@ -209,7 +207,7 @@ footer{border-top:1px solid var(--border);padding:18px 24px;display:flex;justify
 
 <nav>
   <a class="nav-logo" href="index.html">
-    <div class="nav-logo-icon">TA</div>
+    <img class="nav-logo-icon" src="TASA Logo Blue copy.png" alt="TASA Analytics">
     <div class="logo-text">TASA <em>EFX</em></div>
   </a>
   <div class="nav-links">
@@ -378,7 +376,7 @@ footer{border-top:1px solid var(--border);padding:18px 24px;display:flex;justify
   <span>© 2025 TASA Analytics. All rights reserved.</span>
 </footer>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // ══════════════════════════════════════════════════════
 // CONFIG
 // ══════════════════════════════════════════════════════
@@ -825,14 +823,3 @@ document.getElementById('upsell').addEventListener('click',function(e){if(e.targ
       cellNF:       false,
       sheetStubs:   false
     });
-
-    loadExcel(wb);
-    buildSilverMap(silverText);
-
-  } catch(e) {
-    showError(`<strong>${e.message}</strong>`);
-  }
-})();
-</script>
-</body>
-</html>
