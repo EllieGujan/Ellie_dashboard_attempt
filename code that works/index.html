@@ -6,77 +6,68 @@
 <title>TASA EFX — Emissions Intelligence Platform</title>
 <style>
   :root {
-    --navy:       #050d1a;
-    --panel:      #0a1628;
-    --panel2:     #0d1c35;
-    --primary:    #0045AB;
-    --primary-lt: #A7CCE7;
-    --accent:     #3FA9F6;
-    --orange:     #FFBB00;
-    --border:     rgba(0,69,171,0.22);
-    --dim:        rgba(255,255,255,0.48);
-    --mid:        rgba(255,255,255,0.28);
+    --navy:   #0B1D3A;
+    --blue:   #1A4B8C;
+    --gold:   #F5A623;
+    --border: rgba(255,255,255,0.10);
+    --dim:    rgba(255,255,255,0.50);
   }
   * { box-sizing:border-box; margin:0; padding:0; }
-  body { font-family:'Inter','Segoe UI',Arial,sans-serif; background:var(--navy); color:#e8f0ff; min-height:100vh; }
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+  body { font-family:'Segoe UI',Arial,sans-serif; background:var(--navy); color:#fff; min-height:100vh; }
 
   nav {
     display:flex; align-items:center; justify-content:space-between;
-    padding:0 36px; height:58px;
-    background:rgba(5,13,26,0.97); border-bottom:1px solid var(--border);
-    position:sticky; top:0; z-index:100; backdrop-filter:blur(12px);
+    padding:14px 36px; background:rgba(11,29,58,0.96);
+    border-bottom:1px solid var(--border); position:sticky; top:0; z-index:100;
   }
-  .nav-logo { display:flex; align-items:center; gap:12px; text-decoration:none; color:#e8f0ff; }
-  .nav-logo img { height:36px; width:auto; display:block; }
-  .nav-logo span { font-size:15px; font-weight:700; letter-spacing:-0.01em; }
-  .nav-logo span em { color:var(--orange); font-style:normal; }
-  .nav-links { display:flex; gap:4px; }
-  .nav-links a { color:var(--dim); text-decoration:none; font-size:13px; font-weight:500;
-    padding:6px 12px; border-radius:6px; transition:background .15s,color .15s; }
-  .nav-links a:hover { color:#e8f0ff; background:rgba(255,255,255,0.06); }
-  .nav-links a.active { color:#e8f0ff; background:rgba(0,69,171,0.25); }
+  .nav-logo { display:flex; align-items:center; gap:12px; text-decoration:none; color:#fff; }
+  .nav-logo img { height:38px; border-radius:5px; }
+  .nav-logo span { font-size:16px; font-weight:700; }
+  .nav-links { display:flex; gap:24px; }
+  .nav-links a { color:var(--dim); text-decoration:none; font-size:14px; font-weight:500; transition:color 0.2s; }
+  .nav-links a:hover { color:var(--gold); }
+  .nav-links a.active { color:#fff; border-bottom:2px solid var(--gold); padding-bottom:2px; }
 
   .hero { padding:80px 36px 60px; max-width:1100px; margin:0 auto; }
-  .hero .eyebrow { font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:var(--orange); margin-bottom:16px; font-weight:600; }
-  .hero h1 { font-size:clamp(32px,5vw,58px); font-weight:800; letter-spacing:-0.03em; line-height:1.08; margin-bottom:20px; }
-  .hero h1 span { color:var(--orange); }
+  .hero .eyebrow { font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:var(--gold); margin-bottom:16px; }
+  .hero h1 { font-size:clamp(32px,5vw,58px); font-weight:700; letter-spacing:-0.02em; line-height:1.08; margin-bottom:20px; }
+  .hero h1 span { color:var(--gold); }
   .hero p { font-size:16px; line-height:1.7; color:var(--dim); max-width:520px; margin-bottom:40px; }
   .hero-btns { display:flex; gap:14px; flex-wrap:wrap; }
-  .btn-primary { background:var(--orange); color:var(--navy); padding:13px 30px; border-radius:8px; font-weight:700; text-decoration:none; font-size:14px; transition:transform 0.15s,box-shadow 0.15s; }
-  .btn-primary:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(255,187,0,0.35); }
-  .btn-ghost { border:1.5px solid rgba(0,69,171,0.4); color:var(--primary-lt); padding:13px 30px; border-radius:8px; font-weight:500; text-decoration:none; font-size:14px; transition:border-color 0.2s,color 0.2s; }
-  .btn-ghost:hover { border-color:var(--orange); color:var(--orange); }
+  .btn-primary { background:var(--gold); color:var(--navy); padding:13px 30px; border-radius:8px; font-weight:700; text-decoration:none; font-size:14px; transition:transform 0.15s,box-shadow 0.15s; }
+  .btn-primary:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(245,166,35,0.35); }
+  .btn-ghost { border:1.5px solid rgba(255,255,255,0.25); color:#fff; padding:13px 30px; border-radius:8px; font-weight:500; text-decoration:none; font-size:14px; transition:border-color 0.2s,color 0.2s; }
+  .btn-ghost:hover { border-color:var(--gold); color:var(--gold); }
 
   .cards-section { padding:0 36px 80px; max-width:1100px; margin:0 auto; }
-  .section-lbl { font-size:11px; letter-spacing:0.16em; text-transform:uppercase; color:rgba(0,69,171,0.7); margin-bottom:32px; font-weight:700; }
+  .section-lbl { font-size:11px; letter-spacing:0.16em; text-transform:uppercase; color:#6B88B4; margin-bottom:32px; }
   .cards-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
 
   .card {
-    background:var(--panel); border:1px solid var(--border); border-radius:14px;
-    padding:30px 26px 72px; text-decoration:none; color:inherit; display:block;
+    background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:14px;
+    padding:30px 26px; text-decoration:none; color:inherit; display:block;
     position:relative; overflow:hidden;
     transition:transform 0.2s, border-color 0.2s, background 0.2s;
   }
-  .card::after { content:''; position:absolute; top:0;left:0;right:0; height:3px; background:var(--accent-bar,var(--primary-lt)); transform:scaleX(0); transform-origin:left; transition:transform 0.3s; }
-  .card:hover { transform:translateY(-4px); border-color:rgba(0,69,171,0.45); background:var(--panel2); }
+  .card::after { content:''; position:absolute; top:0;left:0;right:0; height:3px; background:var(--accent,#6B88B4); transform:scaleX(0); transform-origin:left; transition:transform 0.3s; }
+  .card:hover { transform:translateY(-4px); border-color:rgba(255,255,255,0.18); background:rgba(255,255,255,0.06); }
   .card:hover::after { transform:scaleX(1); }
 
   .card-badge { display:inline-block; padding:3px 11px; border-radius:20px; font-size:11px; font-weight:600; letter-spacing:0.07em; text-transform:uppercase; margin-bottom:16px; }
-  .badge-silver { background:rgba(167,204,231,0.12); color:#A7CCE7; border:1px solid rgba(167,204,231,0.2); }
-  .badge-plat   { background:rgba(255,187,0,0.12); color:var(--orange); border:1px solid rgba(255,187,0,0.2); }
-  .badge-rlca   { background:rgba(167,243,208,0.12); color:#A7F3D0; border:1px solid rgba(167,243,208,0.2); }
+  .badge-silver  { background:rgba(107,136,180,0.2); color:#9BB5DA; }
+  .badge-plat    { background:rgba(245,166,35,0.15); color:var(--gold); }
+  .badge-rlca    { background:rgba(27,188,156,0.15); color:#1ABC9C; }
 
   .card h3 { font-size:19px; font-weight:700; margin-bottom:10px; line-height:1.25; }
   .card p  { font-size:13px; line-height:1.6; color:var(--dim); margin-bottom:24px; }
   .card-pills { display:flex; gap:8px; flex-wrap:wrap; }
-  .pill { padding:3px 9px; border-radius:4px; font-size:11px; background:rgba(0,69,171,0.12); color:rgba(167,204,231,0.7); border:1px solid rgba(0,69,171,0.2); }
+  .pill { padding:3px 9px; border-radius:4px; font-size:11px; background:rgba(255,255,255,0.07); color:rgba(255,255,255,0.45); }
 
-  .card-arrow { position:absolute; bottom:26px; right:26px; width:32px; height:32px; border-radius:8px; border:1.5px solid var(--border); display:flex; align-items:center; justify-content:center; transition:background 0.2s,border-color 0.2s; }
-  .card:hover .card-arrow { background:var(--orange); border-color:var(--orange); }
-  .card:hover .card-arrow path { stroke:#050d1a; }
+  .card-arrow { position:absolute; bottom:26px; right:26px; width:32px; height:32px; border-radius:50%; border:1.5px solid rgba(255,255,255,0.15); display:flex; align-items:center; justify-content:center; transition:background 0.2s,border-color 0.2s; }
+  .card:hover .card-arrow { background:var(--gold); border-color:var(--gold); }
+  .card:hover .card-arrow path { stroke:#0B1D3A; }
 
-  footer { border-top:1px solid var(--border); padding:22px 36px; display:flex; justify-content:space-between; align-items:center; color:var(--mid); font-size:12px; }
+  footer { border-top:1px solid var(--border); padding:22px 36px; display:flex; justify-content:space-between; align-items:center; color:rgba(255,255,255,0.28); font-size:12px; }
 
   @media(max-width:800px){
     nav,footer{padding:12px 16px;}
@@ -89,8 +80,8 @@
 
 <nav>
   <a class="nav-logo" href="index.html">
-    <img src="TASA Logo Blue copy.png" alt="TASA EFX">
-    <span>TASA <em>EFX</em></span>
+    <!-- PLACEHOLDER: replace with <img src="assets/logo.jpeg" alt="TASA EFX"> -->
+    <span>TASA <span style="color:var(--gold)">EFX</span></span>
   </a>
   <div class="nav-links">
     <a href="index.html" class="active">Home</a>
@@ -105,7 +96,7 @@
   <p class="eyebrow">TASA EFX · Emissions Intelligence</p>
   <h1>Sector Carbon Data<br><span>You Can Act On</span></h1>
   <p>
-    TASA-EFX is the world's most comprehensive global, multi-tier emissions factor database. Explore the Open Silver National Models – free for all to use – or explore deeper supply chain insights with the premium Platinum and rLCA datasets.
+    From NAICS/ISIC silver benchmarks to platinum supply-chain Sankeys and rapid lifecycle assessments — TASA EFX delivers emissions intelligence for every stage of your analysis.
   </p>
   <div class="hero-btns">
     <a href="silver.html" class="btn-primary">Explore Silver Model</a>
