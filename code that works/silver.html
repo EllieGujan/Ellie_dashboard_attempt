@@ -6,93 +6,100 @@
 <title>Silver Model — TASA EFX</title>
 <style>
 :root {
-  --navy:#050d1a; --navy2:#0a1628; --panel:#0d1c35;
-  --primary:#0045AB; --primary-lt:#A7CCE7; --accent:#3FA9F6;
-  --orange:#FFBB00; --white:#e8f0ff;
-  --s1:#FF66B3; --s2:#FFBB00; --s3:#3FA9F6;
-  --dim:rgba(255,255,255,0.40); --bdr:rgba(0,69,171,0.22);
-  --mid:rgba(255,255,255,0.28);
+  --navy:#0d0f1a; --navy2:#121522; --panel:#0f1220;
+  --gold:#F5A623; --white:#e8ecff;
+  --s1:#e8534a; --s2:#f0a500; --s3:#4a90d9;
+  --dim:rgba(255,255,255,0.40); --bdr:rgba(255,255,255,0.10);
+  --mid:#4a5070;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Inter','Segoe UI',Arial,sans-serif;background:var(--navy);color:var(--white);min-height:100vh;}
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+body{font-family:'DM Sans','Segoe UI',Arial,sans-serif;background:var(--navy);color:var(--white);min-height:100vh;}
 
-nav{display:flex;align-items:center;justify-content:space-between;padding:0 32px;height:58px;
-    background:rgba(5,13,26,0.97);border-bottom:1px solid var(--bdr);position:sticky;top:0;z-index:100;backdrop-filter:blur(12px);}
+/* NAV */
+nav{display:flex;align-items:center;justify-content:space-between;padding:13px 32px;
+    background:rgba(13,15,26,0.97);border-bottom:1px solid var(--bdr);position:sticky;top:0;z-index:100;}
 .nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--white);}
-.nav-logo img{height:36px;width:auto;display:block;}
-.logo-text{font-size:15px;font-weight:700;letter-spacing:-.01em;}
-.logo-text em{color:var(--orange);font-style:normal;}
-.nav-links{display:flex;gap:4px;}
-.nav-links a{color:var(--dim);text-decoration:none;font-size:13px;font-weight:500;
-  padding:6px 12px;border-radius:6px;transition:background .15s,color .15s;}
-.nav-links a:hover{color:var(--white);background:rgba(255,255,255,0.06);}
-.nav-links a.active{color:var(--white);background:rgba(0,69,171,0.25);}
+.nav-logo img{height:36px;border-radius:5px;}
+.logo-text{font-size:15px;font-weight:800;letter-spacing:-.01em;}
+.logo-text em{color:var(--gold);font-style:normal;}
+.nav-links{display:flex;gap:22px;}
+.nav-links a{color:var(--dim);text-decoration:none;font-size:14px;font-weight:500;transition:color .2s;}
+.nav-links a:hover{color:var(--gold);}
+.nav-links a.active{color:var(--white);border-bottom:2px solid var(--gold);padding-bottom:2px;}
 
+/* PAGE HEADER */
 .ph{background:var(--navy2);border:1px solid var(--bdr);border-radius:12px;
-    padding:20px 24px 16px;margin:20px 24px 0;border-left:3px solid var(--primary-lt);}
+    padding:20px 24px 16px;margin:20px 24px 0;}
 .ph-title{font-size:22px;font-weight:800;color:var(--white);letter-spacing:-0.02em;margin-bottom:4px;}
 .ph-sub{font-size:12px;color:var(--mid);}
 
+/* TABS */
 .tabs{display:flex;padding:0 24px;border-bottom:1px solid var(--bdr);margin-top:16px;}
 .tb{padding:12px 20px;background:none;border:none;border-bottom:2.5px solid transparent;
     color:var(--dim);font-size:13px;font-weight:500;cursor:pointer;
     font-family:inherit;transition:color .2s,border-color .2s;margin-bottom:-1px;}
-.tb:hover{color:var(--white);} .tb.on{color:var(--white);border-bottom-color:var(--orange);}
+.tb:hover{color:var(--white);} .tb.on{color:var(--white);border-bottom-color:var(--gold);}
 .pane{display:none;} .pane.on{display:block;}
 
+/* CONTROLS — matches the Python widget layout exactly */
 .controls{background:var(--navy2);border:1px solid var(--bdr);border-radius:10px;
            padding:16px 20px;margin:16px 24px;display:flex;gap:24px;flex-wrap:wrap;align-items:flex-start;}
 .ctrl-group{display:flex;flex-direction:column;gap:6px;}
-.ctrl-label{font-size:10px;font-weight:700;letter-spacing:0.12em;color:var(--accent);text-transform:uppercase;}
+.ctrl-label{font-size:10px;font-weight:700;letter-spacing:0.12em;color:var(--s3);text-transform:uppercase;}
 
+/* ISIC dropdown — wide */
 #f-isic{min-width:480px;}
 
+/* Multi-select boxes — match Python widget look */
 select{background:var(--navy);color:var(--white);border:1.5px solid var(--bdr);
   border-radius:8px;padding:4px 8px;font-family:inherit;font-size:12px;
   appearance:none;cursor:pointer;transition:border-color .2s;}
-select:focus{outline:none;border-color:var(--primary-lt);}
+select:focus{outline:none;border-color:var(--white);}
 select option{background:var(--navy2);color:var(--white);}
-select option:checked{background:#0a2a5e;color:var(--primary-lt);}
+select option:checked{background:#1e2a4a;color:#7bb8f5;}
 
 #f-country{width:220px;height:160px;}
 #f-year{width:130px;height:72px;}
 
-.ctrl-hint{font-size:11px;color:var(--mid);margin-top:4px;}
+.ctrl-hint{font-size:11px;color:#3a4060;margin-top:4px;}
 
+/* CHART AREA */
 .chart-area{margin:0 24px 24px;background:var(--navy2);border:1px solid var(--bdr);
              border-radius:10px;overflow:hidden;min-height:200px;}
 
+/* SVG chart */
 .chart-scroll{overflow-x:auto;width:100%;}
 svg.chart{display:block;overflow:visible;}
 
+/* Empty / loading states */
 .state-msg{display:flex;align-items:center;justify-content:center;min-height:300px;
   padding:40px;text-align:center;color:var(--mid);font-size:14px;
   border-radius:10px;border:1px dashed var(--bdr);}
 .spin{width:18px;height:18px;border:2px solid rgba(255,255,255,0.1);
-  border-top-color:var(--orange);border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0;}
+  border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0;}
 @keyframes spin{to{transform:rotate(360deg);}}
 
+/* Raw table */
 .raw-area{margin:0 24px 24px;}
 .tc{display:flex;gap:10px;align-items:center;margin-bottom:12px;flex-wrap:wrap;}
-.tc input{background:rgba(255,255,255,0.06);border:1.5px solid var(--bdr);
+.tc input{background:rgba(255,255,255,0.07);border:1.5px solid var(--bdr);
   color:var(--white);border-radius:7px;padding:7px 11px;font-size:13px;font-family:inherit;width:260px;}
 .tc input::placeholder{color:var(--mid);}
-.tc input:focus{outline:none;border-color:var(--orange);}
+.tc input:focus{outline:none;border-color:var(--gold);}
 .rc{font-size:12px;color:var(--dim);margin-left:auto;}
 .tw{overflow-x:auto;border-radius:9px;border:1px solid var(--bdr);}
 table.raw{width:100%;border-collapse:collapse;font-size:12px;}
-table.raw thead{background:rgba(0,69,171,0.08);}
+table.raw thead{background:rgba(255,255,255,0.04);}
 table.raw th{padding:10px 13px;text-align:left;font-size:10px;text-transform:uppercase;
-  letter-spacing:.10em;color:var(--primary-lt);border-bottom:1px solid var(--bdr);white-space:nowrap;font-weight:600;}
+  letter-spacing:.10em;color:#6B88B4;border-bottom:1px solid var(--bdr);white-space:nowrap;font-weight:600;}
 table.raw td{padding:9px 13px;border-bottom:1px solid rgba(255,255,255,0.04);
   color:rgba(255,255,255,0.78);font-variant-numeric:tabular-nums;}
 table.raw tr:last-child td{border-bottom:none;}
-table.raw tbody tr:hover td{background:rgba(0,69,171,0.06);}
+table.raw tbody tr:hover td{background:rgba(255,255,255,0.025);}
 .cs1{color:var(--s1);font-weight:600;} .cs2{color:var(--s2);font-weight:600;} .cs3{color:var(--s3);font-weight:600;}
 
 footer{border-top:1px solid var(--bdr);padding:20px 24px;display:flex;justify-content:space-between;
-  align-items:center;color:var(--mid);font-size:12px;margin-top:20px;}
+  align-items:center;color:rgba(255,255,255,0.22);font-size:12px;margin-top:20px;}
 
 @media(max-width:700px){
   nav{padding:12px 14px;} .ph,.tabs,.controls,.chart-area,.raw-area{margin-left:12px;margin-right:12px;}
@@ -104,7 +111,7 @@ footer{border-top:1px solid var(--bdr);padding:20px 24px;display:flex;justify-co
 
 <nav>
   <a class="nav-logo" href="index.html">
-    <img src="TASA Logo Blue copy.png" alt="TASA EFX">
+    <!-- LOGO: replace with <img src="assets/logo.jpeg" alt="TASA EFX"> -->
     <div class="logo-text">TASA <em>EFX</em></div>
   </a>
   <div class="nav-links">
