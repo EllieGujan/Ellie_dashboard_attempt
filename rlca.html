@@ -12,13 +12,13 @@
   --panel: #0d1c35;
   --primary:#0045AB; --primary-lt:#A7CCE7; --accent:#3FA9F6;
   --orange: #FFBB00;
-  --white: #e8f0ff;
+  --white: #F4F5F5;
   --s1:    #FF66B3;
-  --s2:    #FFBB00;
-  --teal:  #1ABC9C;
-  --dim:   rgba(255,255,255,0.40);
+  --s2:    #D4AF37;
+  --teal:  #A7F3D0;
+  --dim:   rgba(244,245,245,0.40);
   --bdr:   rgba(0,69,171,0.22);
-  --mid:   rgba(255,255,255,0.28);
+  --mid:   rgba(244,245,245,0.28);
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Segoe UI',Arial,sans-serif;background:var(--navy);color:var(--white);min-height:100vh;}
@@ -367,9 +367,9 @@ const DEFAULT_SECTOR  = 'South Korea — Abrasive Material';
 const FREE_YEAR       = '2023';
 // ══════════════════════════════════════════════════════
 
-const S1_COLOR = '#e8534a';
-const S2_COLOR = '#f0a500';
-const TEAL_COL = '#1ABC9C';
+const S1_COLOR = '#FF66B3';
+const S2_COLOR = '#D4AF37';
+const TEAL_COL = '#A7F3D0';
 
 let tableData   = [];
 let s1Cols      = [];
@@ -449,7 +449,7 @@ function loadExcel(wb) {
 
 function showError(msg) {
   document.getElementById('loading-state').innerHTML =
-    `<div style="color:#e8534a;text-align:center;font-size:13px;line-height:1.8;max-width:480px">
+    `<div style="color:#FF66B3;text-align:center;font-size:13px;line-height:1.8;max-width:480px">
       <div style="font-size:32px;margin-bottom:10px">⚠️</div>
       <strong>Could not load data</strong><br>${msg}<br>
       <span style="color:var(--mid);font-size:11px">Ensure
@@ -592,7 +592,7 @@ function renderDonuts(tierTotals, selectedSector) {
   }, 0);
   drawDonut('donut-tier',[
     {label:'Tiers 0–3 · Near-term',   val:early, color:TEAL_COL},
-    {label:'Tiers 4–10 · Deep chain', val:late,  color:'#7c5cbf'}
+    {label:'Tiers 4–10 · Deep chain', val:late,  color:'#8C5ACC'}
   ], grand, 'donut-tier-legend');
 
   // Update donut subtitles

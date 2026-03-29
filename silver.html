@@ -8,9 +8,9 @@
 :root {
   --navy:#050d1a; --navy2:#0a1628; --panel:#0d1c35;
   --primary:#0045AB; --primary-lt:#A7CCE7; --accent:#3FA9F6;
-  --orange:#FFBB00; --white:#e8f0ff;
-  --s1:#FF66B3; --s2:#FFBB00; --s3:#3FA9F6;
-  --dim:rgba(255,255,255,0.40); --bdr:rgba(0,69,171,0.22);
+  --orange:#FFBB00; --white:#F4F5F5;
+  --s1:#FF66B3; --s2:#D4AF37; --s3:#3FA9F6;
+  --dim:rgba(244,245,245,0.40); --bdr:rgba(0,69,171,0.22);
   --mid:rgba(255,255,255,0.28);
 }
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -183,7 +183,7 @@ footer{border-top:1px solid var(--bdr);padding:20px 24px;display:flex;justify-co
 const CSV_URL = 'TASA_open_silver_stacked_output_all.csv';
 // ══════════════════════════════════════════
 
-const SCOPE_COLORS = {'Scope 1':'#e8534a','Scope 2':'#f0a500','Scope 3':'#4a90d9'};
+const SCOPE_COLORS = {'Scope 1':'#FF66B3','Scope 2':'#D4AF37','Scope 3':'#3FA9F6'};
 const GAP_SECTOR   = 0.6;   // gap between country-sectors within a country (matches Python)
 const GAP_COUNTRY  = 1.8;   // gap between countries (matches Python)
 const BAR_W        = 28;    // pixel width per bar unit
@@ -405,16 +405,16 @@ function render(){
     gridLines += `<line x1="${LPAD}" y1="${y.toFixed(1)}" x2="${chartW-RPAD}" y2="${y.toFixed(1)}"
       stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
       <text x="${LPAD-6}" y="${y.toFixed(1)}" dy="4" text-anchor="end"
-        fill="#5a6080" font-size="10" font-family="DM Sans,Segoe UI,sans-serif">${lbl}</text>`;
+        fill="#A7CCE7" font-size="10" font-family="DM Sans,Segoe UI,sans-serif">${lbl}</text>`;
   }
 
   // Y axis label
   const yAxisLabel = `<text transform="rotate(-90)" x="${-(TPAD+plotH/2)}" y="14"
-    text-anchor="middle" fill="#4a5070" font-size="11" font-family="DM Sans,Segoe UI,sans-serif">Emissions Intensity</text>`;
+    text-anchor="middle" fill="#A7CCE7" font-size="11" font-family="DM Sans,Segoe UI,sans-serif">Emissions Intensity</text>`;
 
   // NAICS label at top (matches Python annotation at y=1.07)
   const isicLabel = `<text x="${chartW/2}" y="${TPAD-28}" text-anchor="middle"
-    fill="#5a6080" font-size="11" font-family="DM Sans,Segoe UI,sans-serif">
+    fill="#A7CCE7" font-size="11" font-family="DM Sans,Segoe UI,sans-serif">
     ▸  ${escSVG(isic)}</text>`;
 
   // Legend
@@ -423,7 +423,7 @@ function render(){
   ['Scope 1','Scope 2','Scope 3'].forEach((sc,i)=>{
     const lx = LPAD + i*90;
     legend += `<rect x="${lx}" y="${legendY-8}" width="10" height="10" rx="2" fill="${SCOPE_COLORS[sc]}"/>
-      <text x="${lx+14}" y="${legendY+1}" fill="#8a90a8" font-size="11" font-family="DM Sans,Segoe UI,sans-serif">${sc}</text>`;
+      <text x="${lx+14}" y="${legendY+1}" fill="#A7CCE7" font-size="11" font-family="DM Sans,Segoe UI,sans-serif">${sc}</text>`;
   });
 
   // Bars — one <rect> per scope per row, stacked
@@ -458,7 +458,7 @@ function render(){
   tickVals.forEach((xv,i)=>{
     const cx = (px(xv) + BAR_W/2).toFixed(1);
     xTicks += `<text x="${cx}" y="${(TPAD+plotH+14).toFixed(1)}" text-anchor="middle"
-      fill="#5a6080" font-size="10" font-family="DM Sans,Segoe UI,sans-serif">${tickTexts[i]}</text>`;
+      fill="#A7CCE7" font-size="10" font-family="DM Sans,Segoe UI,sans-serif">${tickTexts[i]}</text>`;
   });
 
   // Country Sector labels (below year ticks) — matches Python annotation at y=-0.34
@@ -478,7 +478,7 @@ function render(){
     const ly = TPAD + plotH + 30;
     lines.forEach((ln,li)=>{
       secLabels += `<text x="${cx}" y="${(ly+li*13).toFixed(1)}" text-anchor="middle"
-        fill="#5a6080" font-size="10" font-family="DM Sans,Segoe UI,sans-serif">${escSVG(ln)}</text>`;
+        fill="#A7CCE7" font-size="10" font-family="DM Sans,Segoe UI,sans-serif">${escSVG(ln)}</text>`;
     });
   });
 
@@ -487,7 +487,7 @@ function render(){
   Object.entries(countryLabelPos).forEach(([country, midX])=>{
     const cx = (px(midX) + BAR_W/2).toFixed(1);
     ctyLabels += `<text x="${cx}" y="${(TPAD+plotH+110).toFixed(1)}" text-anchor="middle"
-      fill="#7bb8f5" font-size="13" font-weight="bold" font-family="DM Sans,Segoe UI,sans-serif">${escSVG(country)}</text>`;
+      fill="#A7CCE7" font-size="13" font-weight="bold" font-family="DM Sans,Segoe UI,sans-serif">${escSVG(country)}</text>`;
   });
 
   // Country separator lines — matches Python add_shape dotted vertical
@@ -497,7 +497,7 @@ function render(){
     const lastX = Math.max(...agg.filter(r=>r.country===country).map(r=>r.xPos));
     const sepX  = (px(lastX) + BAR_W + (GAP_SECTOR/2+GAP_COUNTRY/3)*UNIT).toFixed(1);
     separators += `<line x1="${sepX}" y1="${TPAD}" x2="${sepX}" y2="${(TPAD+plotH).toFixed(1)}"
-      stroke="#2a3050" stroke-width="1" stroke-dasharray="4,3"/>`;
+      stroke="#0045AB" stroke-width="1" stroke-dasharray="4,3"/>`;
   });
 
   area.innerHTML = `
@@ -517,9 +517,9 @@ function render(){
     </div>
     <div id="tooltip" style="
       display:none;position:fixed;pointer-events:none;
-      background:rgba(21,24,39,0.97);color:#e8ecff;
+      background:rgba(10,22,40,0.97);color:#F4F5F5;
       padding:10px 14px;border-radius:8px;font-size:12px;
-      border:1px solid #2e3249;line-height:1.7;z-index:9999;max-width:220px;
+      border:1px solid #0045AB;line-height:1.7;z-index:9999;max-width:220px;
       font-family:'DM Sans','Segoe UI',sans-serif;box-shadow:0 4px 16px rgba(0,0,0,0.4);">
     </div>`;
 
@@ -529,12 +529,12 @@ function render(){
     rect.addEventListener('mouseenter', e=>{
       const d = e.target.dataset;
       tip.innerHTML = `<b style="font-size:13px">${d.country}</b><br>
-        <span style="color:#8a90a8">${d.sector} · ${d.year}</span><br><br>
+        <span style="color:#A7CCE7">${d.sector} · ${d.year}</span><br><br>
         <b>Total: ${d.total}</b><br>
-        <span style="color:#3a4060">──────────────</span><br>
-        <span style="color:#e8534a">▮</span> Scope 1 &nbsp; ${d.s1}<br>
-        <span style="color:#f0a500">▮</span> Scope 2 &nbsp; ${d.s2}<br>
-        <span style="color:#4a90d9">▮</span> Scope 3 &nbsp; ${d.s3}`;
+        <span style="color:#0045AB">──────────────</span><br>
+        <span style="color:#FF66B3">▮</span> Scope 1 &nbsp; ${d.s1}<br>
+        <span style="color:#D4AF37">▮</span> Scope 2 &nbsp; ${d.s2}<br>
+        <span style="color:#3FA9F6">▮</span> Scope 3 &nbsp; ${d.s3}`;
       tip.style.display='block';
     });
     rect.addEventListener('mousemove', e=>{
