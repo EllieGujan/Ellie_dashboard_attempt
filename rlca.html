@@ -361,7 +361,7 @@ footer{border-top:1px solid var(--bdr);padding:20px 24px;display:flex;justify-co
 const XLSX_FILE  = 'TASA-EFX_rLCA_Abrasive-Material_KOR_2023_v1.0_DEMO.xlsx';
 const SHEET_NAME = '10 Tiers_all_sectors';
 const EF_SHEET   = 'Sector Emissions Factors';
-const SILVER_CSV = 'TASA_Silver_NAICS_ISIC.csv';
+const SILVER_CSV = 'TASA_open_silver_stacked_output_all.csv';
 const DEFAULT_COUNTRY = 'South Korea';
 const DEFAULT_SECTOR  = 'South Korea — Abrasive Material';
 const FREE_YEAR       = '2023';
@@ -756,7 +756,7 @@ function buildSilverMap(csvText) {
   const rows=parseCSV(csvText);
   silverMap={};
   rows.forEach(row=>{
-    const c=row['Country Name'],s=row['Country Sector'];
+    const c=row['Country'],s=row['Country Sectors'];
     if(!c||!s) return;
     if(!silverMap[c]) silverMap[c]=new Set();
     silverMap[c].add(s);

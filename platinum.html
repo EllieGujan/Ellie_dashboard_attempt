@@ -183,7 +183,7 @@ footer{border-top:1px solid var(--bdr);padding:20px 36px;display:flex;justify-co
   <p class="ey">Platinum Model · Supply-Chain Analysis</p>
   <h1>Supply Chain  Emissions Flows and Hotspots</h1>
   <!-- EDIT: update description -->
-  <p>Trace emissions of supply inputs using locationally-specific data. Select a country, ISIC category, and year to explore the supply-chain breakdown.</p>
+  <p>Trace emissions of supply inputs using locationally-specific data. Select a country, NAICS category, and year to explore the supply-chain breakdown.</p>
 </div>
 
 <div class="tabs">
@@ -245,7 +245,7 @@ footer{border-top:1px solid var(--bdr);padding:20px 36px;display:flex;justify-co
 // ══════════════════════════════════════════════════════════════
 const XLSX_FILE       = 'TASA-EFX_KOR_Platinum_Model_2024_v3.0-test.xlsx';
 const SHEET_NAME      = 'Hotspots_USD';
-const SILVER_CSV      = 'TASA_Silver_NAICS_ISIC.csv';
+const SILVER_CSV      = 'TASA_open_silver_stacked_output_all.csv';
 
 const DEFAULT_COUNTRY = 'South Korea';
 const DEFAULT_SECTOR  = 'South Korea — Abrasive Material'; // EDIT: the one free sector
@@ -382,7 +382,7 @@ function buildSilverMap(csvText){
   const rows = parseCSV(csvText);
   silverMap = {};
   rows.forEach(row=>{
-    const country=row['Country Name'], sector=row['Country Sector'];
+    const country=row['Country'], sector=row['Country Sectors'];
     if(!country||!sector) return;
     if(!silverMap[country]) silverMap[country]=new Set();
     silverMap[country].add(sector);
